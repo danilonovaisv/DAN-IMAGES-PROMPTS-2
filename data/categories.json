@@ -1,0 +1,74 @@
+[
+  {
+    "id": "cat-photorealism",
+    "name": "Fotorealismo & Retrato",
+    "slug": "photorealism",
+    "icon": "Camera",
+    "color": "emerald",
+    "description": "Fotografia de estúdio, retratos humanos, macro e cenas realistas",
+    "isDefault": true
+  },
+  {
+    "id": "cat-cinematic",
+    "name": "Cinemático & Sci-Fi",
+    "slug": "cinematic",
+    "icon": "Film",
+    "color": "indigo",
+    "description": "Enquadramentos de cinema, iluminação dramática e estética sci-fi/cyberpunk",
+    "isDefault": true
+  },
+  {
+    "id": "cat-architecture",
+    "name": "Arquitetura & Espaços",
+    "slug": "architecture",
+    "icon": "Building2",
+    "color": "amber",
+    "description": "Design de interiores, edifícios modernos, minimalismo e fachadas",
+    "isDefault": true
+  },
+  {
+    "id": "cat-character",
+    "name": "Design de Personagens",
+    "slug": "character",
+    "icon": "UserCircle2",
+    "color": "purple",
+    "description": "Conceito de personagens, criaturas fantásticas, armaduras e trajes",
+    "isDefault": true
+  },
+  {
+    "id": "cat-product",
+    "name": "Produto & 3D Render",
+    "slug": "product",
+    "icon": "Package",
+    "color": "cyan",
+    "description": "Visualização de produtos comerciais, embalagens, iluminação de estúdio 3D",
+    "isDefault": true
+  },
+  {
+    "id": "cat-landscapes",
+    "name": "Natureza & Paisagens",
+    "slug": "landscapes",
+    "icon": "Trees",
+    "color": "teal",
+    "description": "Montanhas, florestas, praias, céus dramáticos e fenômenos naturais",
+    "isDefault": true
+  },
+  {
+    "id": "cat-illustration",
+    "name": "Arte Conceitual & Anime",
+    "slug": "illustration",
+    "icon": "Palette",
+    "color": "rose",
+    "description": "Ilustração digital, pintura em tela, estilo aquarela, concept art e anime",
+    "isDefault": true
+  },
+  {
+    "id": "cat-editorial",
+    "name": "Moda & Editorial",
+    "slug": "editorial",
+    "icon": "Sparkles",
+    "color": "pink",
+    "description": "Alta costura, lookbooks, fotografia editorial de revistas e passarelas",
+    "isDefault": true
+  }
+]
