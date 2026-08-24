@@ -83,7 +83,7 @@ async function startServer() {
   });
 
   // File Upload endpoint (multipart)
-  app.post('/api/upload', upload.single('image'), (req, res) => {
+  app.post('/api/upload', upload.single('image') as unknown as express.RequestHandler, (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: 'Nenhum arquivo de imagem foi enviado.' });
@@ -315,7 +315,7 @@ async function startServer() {
   });
 
   // Batch Image Upload endpoint
-  app.post('/api/workspace/upload-batch-images', upload.array('images', 50), (req, res) => {
+  app.post('/api/workspace/upload-batch-images', upload.array('images', 50) as unknown as express.RequestHandler, (req, res) => {
     try {
       const files = req.files as Express.Multer.File[];
       if (!files || files.length === 0) {
