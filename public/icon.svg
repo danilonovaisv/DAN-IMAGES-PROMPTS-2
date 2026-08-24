@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e1a"/>
+      <stop offset="50%" stop-color="#04060b"/>
+      <stop offset="100%" stop-color="#090d18"/>
+    </linearGradient>
+
+    <!-- Outer Glow Border Gradient -->
+    <linearGradient id="neonBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+
+    <!-- Ghost Body Gradient -->
+    <linearGradient id="ghostBody" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#bae6fd"/>
+    </linearGradient>
+
+    <!-- Box Gradient -->
+    <linearGradient id="boxGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Dark Rounded Container -->
+  <rect x="16" y="16" width="480" height="480" rx="90" fill="url(#bgGrad)"/>
+  
+  <!-- Neon Glow Frame -->
+  <rect x="28" y="28" width="456" height="456" rx="80" stroke="url(#neonBorder)" stroke-width="6" fill="none" opacity="0.9"/>
+  <rect x="28" y="28" width="456" height="456" rx="80" stroke="#38bdf8" stroke-width="3" fill="none"/>
+
+  <!-- Ghost Glow Underlay -->
+  <ellipse cx="256" cy="230" rx="110" ry="120" fill="#38bdf8" opacity="0.25"/>
+
+  <!-- Headphone Arc / Band -->
+  <path d="M 152 200 A 110 110 0 0 1 360 200" stroke="#0f172a" stroke-width="26" stroke-linecap="round" fill="none"/>
+  <path d="M 154 195 A 108 108 0 0 1 358 195" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.9"/>
+
+  <!-- Ghost Head & Body -->
+  <path d="M 170 240 C 170 145, 342 145, 342 240 C 342 280, 365 300, 368 315 C 372 332, 350 325, 335 315 C 315 300, 290 320, 265 305 C 245 295, 225 315, 200 305 C 180 295, 160 325, 144 315 C 138 300, 170 280, 170 240 Z" fill="url(#ghostBody)"/>
+
+  <!-- Ghost Face Features -->
+  <!-- Left Eye -->
+  <ellipse cx="225" cy="205" rx="10" ry="15" fill="#0f172a"/>
+  <ellipse cx="222" cy="200" rx="3.5" ry="5" fill="#ffffff"/>
+  <!-- Right Eye -->
+  <ellipse cx="287" cy="205" rx="10" ry="15" fill="#0f172a"/>
+  <ellipse cx="284" cy="200" rx="3.5" ry="5" fill="#ffffff"/>
+  <!-- Smile -->
+  <path d="M 244 228 Q 256 244 268 228 Z" fill="#0f172a"/>
+
+  <!-- Left Ear Cup (Headphone) -->
+  <g transform="translate(130, 195)">
+    <rect x="-10" y="-30" width="30" height="60" rx="15" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+    <ellipse cx="5" cy="0" rx="6" ry="18" fill="#1e293b"/>
+    <circle cx="5" cy="0" r="7" stroke="#38bdf8" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Right Ear Cup (Headphone) -->
+  <g transform="translate(362, 195)">
+    <rect x="-20" y="-30" width="30" height="60" rx="15" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+    <ellipse cx="-5" cy="0" rx="6" ry="18" fill="#1e293b"/>
+    <circle cx="-5" cy="0" r="7" stroke="#38bdf8" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Prompt Cards inside the box -->
+  <g transform="translate(145, 275)">
+    <!-- Back card 1 -->
+    <rect x="25" y="0" width="170" height="110" rx="12" fill="#0369a1" stroke="#38bdf8" stroke-width="2" transform="rotate(-6 110 55)" opacity="0.6"/>
+    <!-- Back card 2 -->
+    <rect x="30" y="0" width="165" height="110" rx="12" fill="#0284c7" stroke="#38bdf8" stroke-width="2" transform="rotate(4 110 55)" opacity="0.8"/>
+    <!-- Front card -->
+    <rect x="20" y="5" width="180" height="115" rx="12" fill="#0c192c" stroke="#38bdf8" stroke-width="3"/>
+    <!-- Card Photo Icon (Mountain & Sun) -->
+    <circle cx="65" cy="42" r="8" fill="#38bdf8"/>
+    <path d="M 40 95 L 85 45 L 125 80 L 155 55 L 185 95 Z" fill="#0284c7"/>
+    <path d="M 65 95 L 105 52 L 140 95 Z" fill="#38bdf8" opacity="0.9"/>
+  </g>
+
+  <!-- Front Box Container -->
+  <g id="box">
+    <!-- Box Body with Rounded Corners -->
+    <rect x="90" y="325" width="332" height="120" rx="24" fill="url(#boxGrad)" stroke="#38bdf8" stroke-width="4"/>
+    <rect x="92" y="327" width="328" height="6" rx="3" fill="#38bdf8" opacity="0.7"/>
+
+    <!-- "DAN" Typography -->
+    <text x="256" y="386" font-family="system-ui, -apple-system, 'Inter', 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#ffffff" text-anchor="middle" letter-spacing="2">
+      DAN
+    </text>
+
+    <!-- "IMAGES PROMPTS" Typography -->
+    <text x="256" y="420" font-family="system-ui, -apple-system, 'Inter', 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="19" fill="#38bdf8" text-anchor="middle" letter-spacing="4">
+      IMAGES PROMPTS
+    </text>
+  </g>
+</svg>

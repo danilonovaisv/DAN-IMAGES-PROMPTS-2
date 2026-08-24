@@ -1,0 +1,8 @@
+{
+  "name": "DAN IMAGES PROMPTS",
+  "description": "Biblioteca visual inteligente para organizar prompts de IA com estruturação multimodal via Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
