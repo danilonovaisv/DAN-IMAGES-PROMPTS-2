@@ -125,7 +125,7 @@ export const WorkspaceImportModal: React.FC<WorkspaceImportModalProps> = ({
       // 2. Fallback to Google Identity Services (GIS) with accurate OAuth Client ID
       try {
         const clientId =
-          firebaseConfig.oAuthClientId ||
+          (firebaseConfig as Record<string, string | undefined>).oAuthClientId ||
           import.meta.env.VITE_GOOGLE_CLIENT_ID ||
           '1044209571335-1pnbfjpan7npjb2bqlhv7bhffji9cror.apps.googleusercontent.com';
 
