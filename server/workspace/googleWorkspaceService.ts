@@ -364,7 +364,7 @@ export async function importPromptsFromWorkspace(
     }
 
     // Check if prompt already exists by title
-    const existingPrompts = promptStore.getPrompts();
+    const existingPrompts = await promptStore.getPrompts();
     const existing = existingPrompts.find(
       p => normalizeName(p.title) === sectionTitleNormalized
     );
@@ -412,13 +412,13 @@ export async function importPromptsFromWorkspace(
     };
 
     if (existing) {
-      const updated = promptStore.updatePrompt(existing.id, promptPayload);
+      const updated = await promptStore.updatePrompt(existing.id, promptPayload);
       if (updated) {
         importedPrompts.push(updated);
         updatedCount++;
       }
     } else {
-      const created = promptStore.createPrompt(promptPayload);
+      const created = await promptStore.createPrompt(promptPayload);
       importedPrompts.push(created);
       importedCount++;
     }
@@ -527,7 +527,7 @@ export async function importPromptsFromRawTextAndFiles(
       }
     }
 
-    const existingPrompts = promptStore.getPrompts();
+    const existingPrompts = await promptStore.getPrompts();
     const existing = existingPrompts.find(
       p => normalizeName(p.title) === sectionTitleNormalized
     );
@@ -574,13 +574,13 @@ export async function importPromptsFromRawTextAndFiles(
     };
 
     if (existing) {
-      const updated = promptStore.updatePrompt(existing.id, promptPayload);
+      const updated = await promptStore.updatePrompt(existing.id, promptPayload);
       if (updated) {
         importedPrompts.push(updated);
         updatedCount++;
       }
     } else {
-      const created = promptStore.createPrompt(promptPayload);
+      const created = await promptStore.createPrompt(promptPayload);
       importedPrompts.push(created);
       importedCount++;
     }

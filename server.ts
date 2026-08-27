@@ -3,12 +3,13 @@ import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
 import { createServer as createViteServer } from 'vite';
-import { promptStore, UPLOADS_DIR } from './server/prompts/storage';
+import { UPLOADS_DIR } from './server/prompts/storage';
+import { getPromptRepository } from './server/repositories';
 import { analyzeAndDecomposePrompt } from './server/ai/promptAnalyzer';
 import { validatePromptInput } from './server/validation/promptSchema';
 import { importPromptsFromWorkspace, importPromptsFromRawTextAndFiles } from './server/workspace/googleWorkspaceService';
 
-const PORT = 3000;
+const DEFAULT_PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // Configure Multer storage
 const storage = multer.diskStorage({
@@ -34,8 +35,11 @@ const upload = multer({
   },
 });
 
-async function startServer() {
+async function startServer(customPort?: number) {
   const app = express();
+
+  // Initialize persistence repository
+  const repository = await getPromptRepository();
 
   // Middleware for body parsing
   app.use(express.json({ limit: '20mb' }));
@@ -126,10 +130,10 @@ async function startServer() {
   });
 
   // Prompts CRUD
-  app.get('/api/prompts', (req, res) => {
+  app.get('/api/prompts', async (req, res) => {
     try {
       const { search, category, model, tag, favorites, sortBy } = req.query;
-      const prompts = promptStore.getPrompts({
+      const prompts = await repository.getPrompts({
         search: search as string,
         category: category as string,
         model: model as string,
@@ -139,116 +143,170 @@ async function startServer() {
       });
       res.json(prompts);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      console.error('Error fetching prompts:', err);
+      res.status(500).json({ error: 'Erro ao carregar prompts.' });
     }
   });
 
-  app.get('/api/prompts/:id', (req, res) => {
-    const prompt = promptStore.getPromptById(req.params.id);
-    if (!prompt) {
-      return res.status(404).json({ error: 'Prompt não encontrado.' });
+  app.get('/api/prompts/:id', async (req, res) => {
+    try {
+      const prompt = await repository.getPromptById(req.params.id);
+      if (!prompt) {
+        return res.status(404).json({ error: 'Prompt não encontrado.' });
+      }
+      res.json(prompt);
+    } catch (err: any) {
+      console.error('Error fetching prompt:', err);
+      res.status(500).json({ error: 'Erro ao buscar prompt.' });
     }
-    res.json(prompt);
   });
 
-  app.post('/api/prompts', (req, res) => {
+  app.post('/api/prompts', async (req, res) => {
     const validation = validatePromptInput(req.body);
     if (!validation.isValid) {
       return res.status(400).json({ error: validation.error });
     }
 
     try {
-      const created = promptStore.createPrompt(req.body);
+      const created = await repository.createPrompt(req.body);
       res.status(201).json(created);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      console.error('Error creating prompt:', err);
+      res.status(500).json({ error: 'Erro ao criar prompt.' });
     }
   });
 
-  app.put('/api/prompts/:id', (req, res) => {
+  app.put('/api/prompts/:id', async (req, res) => {
     try {
-      const updated = promptStore.updatePrompt(req.params.id, req.body);
+      const updated = await repository.updatePrompt(req.params.id, req.body);
       if (!updated) {
         return res.status(404).json({ error: 'Prompt não encontrado.' });
       }
       res.json(updated);
     } catch (err: any) {
-      res.status(500).json({ error: err.message });
+      console.error('Error updating prompt:', err);
+      res.status(500).json({ error: 'Erro ao atualizar prompt.' });
     }
   });
 
-  app.delete('/api/prompts/:id', (req, res) => {
-    const success = promptStore.deletePrompt(req.params.id);
-    if (!success) {
-      return res.status(404).json({ error: 'Prompt não encontrado para exclusão.' });
+  app.delete('/api/prompts/:id', async (req, res) => {
+    try {
+      const success = await repository.deletePrompt(req.params.id);
+      if (!success) {
+        return res.status(404).json({ error: 'Prompt não encontrado para exclusão.' });
+      }
+      res.json({ success: true, message: 'Prompt excluído com sucesso.' });
+    } catch (err: any) {
+      console.error('Error deleting prompt:', err);
+      res.status(500).json({ error: 'Erro ao excluir prompt.' });
     }
-    res.json({ success: true, message: 'Prompt excluído com sucesso.' });
   });
 
-  app.post('/api/prompts/:id/favorite', (req, res) => {
-    const updated = promptStore.toggleFavorite(req.params.id);
-    if (!updated) {
-      return res.status(404).json({ error: 'Prompt não encontrado.' });
+  app.post('/api/prompts/:id/favorite', async (req, res) => {
+    try {
+      const updated = await repository.toggleFavorite(req.params.id);
+      if (!updated) {
+        return res.status(404).json({ error: 'Prompt não encontrado.' });
+      }
+      res.json(updated);
+    } catch (err: any) {
+      console.error('Error favoriting prompt:', err);
+      res.status(500).json({ error: 'Erro ao favoritar prompt.' });
     }
-    res.json(updated);
   });
 
-  app.post('/api/prompts/:id/copy', (req, res) => {
-    const updated = promptStore.incrementCopyCount(req.params.id);
-    if (!updated) {
-      return res.status(404).json({ error: 'Prompt não encontrado.' });
+  app.post('/api/prompts/:id/copy', async (req, res) => {
+    try {
+      const updated = await repository.incrementCopyCount(req.params.id);
+      if (!updated) {
+        return res.status(404).json({ error: 'Prompt não encontrado.' });
+      }
+      res.json(updated);
+    } catch (err: any) {
+      console.error('Error incrementing copy count:', err);
+      res.status(500).json({ error: 'Erro ao registrar cópia.' });
     }
-    res.json(updated);
   });
 
-  app.post('/api/prompts/:id/duplicate', (req, res) => {
-    const duplicated = promptStore.duplicatePrompt(req.params.id);
-    if (!duplicated) {
-      return res.status(404).json({ error: 'Prompt não encontrado.' });
+  app.post('/api/prompts/:id/duplicate', async (req, res) => {
+    try {
+      const duplicated = await repository.duplicatePrompt(req.params.id);
+      if (!duplicated) {
+        return res.status(404).json({ error: 'Prompt não encontrado.' });
+      }
+      res.status(201).json(duplicated);
+    } catch (err: any) {
+      console.error('Error duplicating prompt:', err);
+      res.status(500).json({ error: 'Erro ao duplicar prompt.' });
     }
-    res.status(201).json(duplicated);
   });
 
   // Categories CRUD
-  app.get('/api/categories', (req, res) => {
-    res.json(promptStore.getCategories());
+  app.get('/api/categories', async (req, res) => {
+    try {
+      const categories = await repository.getCategories();
+      res.json(categories);
+    } catch (err: any) {
+      console.error('Error getting categories:', err);
+      res.status(500).json({ error: 'Erro ao carregar categorias.' });
+    }
   });
 
-  app.post('/api/categories', (req, res) => {
-    const { name, slug, icon, color, description } = req.body;
-    if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
+  app.post('/api/categories', async (req, res) => {
+    try {
+      const { name, slug, icon, color, description } = req.body;
+      if (!name || !name.trim()) {
+        return res.status(400).json({ error: 'O nome da categoria é obrigatório.' });
+      }
+      const created = await repository.createCategory({
+        name: name.trim(),
+        slug: slug || name.toLowerCase().replace(/\s+/g, '-'),
+        icon: icon || 'Tag',
+        color: color || 'indigo',
+        description,
+      });
+      res.status(201).json(created);
+    } catch (err: any) {
+      console.error('Error creating category:', err);
+      res.status(500).json({ error: 'Erro ao criar categoria.' });
     }
-    const created = promptStore.createCategory({
-      name: name.trim(),
-      slug: slug || name.toLowerCase().replace(/\s+/g, '-'),
-      icon: icon || 'Tag',
-      color: color || 'indigo',
-      description,
-    });
-    res.status(201).json(created);
   });
 
-  app.put('/api/categories/:id', (req, res) => {
-    const updated = promptStore.updateCategory(req.params.id, req.body);
-    if (!updated) {
-      return res.status(404).json({ error: 'Categoria não encontrada.' });
+  app.put('/api/categories/:id', async (req, res) => {
+    try {
+      const updated = await repository.updateCategory(req.params.id, req.body);
+      if (!updated) {
+        return res.status(404).json({ error: 'Categoria não encontrada.' });
+      }
+      res.json(updated);
+    } catch (err: any) {
+      console.error('Error updating category:', err);
+      res.status(500).json({ error: 'Erro ao atualizar categoria.' });
     }
-    res.json(updated);
   });
 
-  app.delete('/api/categories/:id', (req, res) => {
-    const success = promptStore.deleteCategory(req.params.id);
-    if (!success) {
-      return res.status(400).json({ error: 'Não é possível excluir categorias padrão do sistema.' });
+  app.delete('/api/categories/:id', async (req, res) => {
+    try {
+      const success = await repository.deleteCategory(req.params.id);
+      if (!success) {
+        return res.status(400).json({ error: 'Não é possível excluir categorias padrão do sistema ou categoria inexistente.' });
+      }
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error('Error deleting category:', err);
+      res.status(500).json({ error: 'Erro ao excluir categoria.' });
     }
-    res.json({ success: true });
   });
 
   // Reset database to initial sample data
-  app.post('/api/reset-data', (req, res) => {
-    promptStore.resetToDefaults();
-    res.json({ success: true, message: 'Dados restaurados para o padrão.' });
+  app.post('/api/reset-data', async (req, res) => {
+    try {
+      await repository.resetToDefaults();
+      res.json({ success: true, message: 'Dados restaurados para o padrão.' });
+    } catch (err: any) {
+      console.error('Error resetting data:', err);
+      res.status(500).json({ error: 'Erro ao restaurar dados padrão.' });
+    }
   });
 
   // Google Workspace endpoints
@@ -340,13 +398,13 @@ async function startServer() {
   });
 
   // --- Vite / Frontend Serving ---
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
+  } else if (process.env.NODE_ENV === 'production') {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
     app.get('*all', (req, res) => {
@@ -354,12 +412,19 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`DAN IMAGES PROMPTS Server running at http://0.0.0.0:${PORT}`);
+  const port = customPort || DEFAULT_PORT;
+  const server = app.listen(port, '0.0.0.0', () => {
+    console.log(`DAN IMAGES PROMPTS Server running at http://0.0.0.0:${port}`);
+  });
+
+  return { app, server, repository };
+}
+
+if (process.env.NODE_ENV !== 'test') {
+  startServer().catch((err) => {
+    console.error('Falha ao iniciar o servidor:', err);
+    process.exit(1);
   });
 }
 
-startServer().catch((err) => {
-  console.error('Falha ao iniciar o servidor:', err);
-  process.exit(1);
-});
+export { startServer };
