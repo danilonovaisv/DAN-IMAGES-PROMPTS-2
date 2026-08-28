@@ -17,34 +17,37 @@ export class FirestorePromptRepository implements PromptRepository {
       process.env.GOOGLE_CLOUD_PROJECT ||
       process.env.FIREBASE_PROJECT_ID;
 
-    if (!projectId) {
-      try {
-        const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
-        if (fs.existsSync(configPath)) {
-          const raw = fs.readFileSync(configPath, 'utf-8');
-          const parsed = JSON.parse(raw);
-          if (parsed.projectId) {
-            projectId = parsed.projectId;
-          }
+    let databaseId =
+      process.env.FIRESTORE_DATABASE_ID ||
+      process.env.FIREBASE_DATABASE_ID;
+
+    try {
+      const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
+      if (fs.existsSync(configPath)) {
+        const raw = fs.readFileSync(configPath, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (!projectId && parsed.projectId) {
+          projectId = parsed.projectId;
         }
-      } catch (err) {
-        console.warn('[persistence] Failed to read firebase-applet-config.json:', err);
+        if (!databaseId && parsed.firestoreDatabaseId) {
+          databaseId = parsed.firestoreDatabaseId;
+        }
       }
+    } catch (err) {
+      console.warn('[persistence] Failed to read firebase-applet-config.json:', err);
     }
 
     if (!projectId) {
       projectId = 'projeto-agents-503014';
     }
 
-    if (getApps().length === 0) {
-      initializeApp({
-        projectId,
-      });
-    }
+    const app = getApps().length === 0
+      ? initializeApp({ projectId })
+      : getApps()[0];
 
-    this.db = getFirestore();
+    this.db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
     this.db.settings({ ignoreUndefinedProperties: true });
-    console.log(`[persistence] provider initialized: Firestore (Project ID: ${projectId})`);
+    console.log(`[persistence] provider initialized: Firestore (Project ID: ${projectId}, Database: ${databaseId || '(default)'})`);
   }
 
   public async init(): Promise<void> {
@@ -135,8 +138,8 @@ export class FirestorePromptRepository implements PromptRepository {
         promptsSeeded: promptsCountSnap.empty ? seedPrompts.length : 0,
         categoriesSeeded: categoriesCountSnap.empty ? seedCategories.length : 0,
       };
-    } catch (err) {
-      console.error('[persistence] Error during seed/migration:', err);
+    } catch (err: any) {
+      console.warn('[persistence] Firestore seed/migration check encountered error:', err?.message || err);
       throw err;
     }
   }

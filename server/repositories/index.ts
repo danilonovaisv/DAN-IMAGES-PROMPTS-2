@@ -9,32 +9,24 @@ export async function getPromptRepository(): Promise<PromptRepository> {
     return repositoryInstance;
   }
 
-  const provider = (process.env.PERSISTENCE_PROVIDER || '').toLowerCase().trim();
+  const provider = (process.env.PERSISTENCE_PROVIDER || 'filesystem').toLowerCase().trim();
 
-  if (provider === 'filesystem') {
-    console.log('[persistence] Explicit PERSISTENCE_PROVIDER=filesystem requested.');
-    repositoryInstance = new FilePromptRepository(process.env.DATA_DIR);
-    await repositoryInstance.init();
-    return repositoryInstance;
-  }
-
-  try {
-    const firestoreRepo = new FirestorePromptRepository();
-    await firestoreRepo.init();
-    repositoryInstance = firestoreRepo;
-    return repositoryInstance;
-  } catch (err: any) {
-    if (process.env.NODE_ENV === 'production') {
-      console.error('[persistence] CRITICAL: Failed to initialize Firestore repository in production environment:', err);
-      throw new Error(`Persistence initialization failure: ${err.message || err}`);
+  if (provider === 'firestore') {
+    try {
+      const firestoreRepo = new FirestorePromptRepository();
+      await firestoreRepo.init();
+      repositoryInstance = firestoreRepo;
+      return repositoryInstance;
+    } catch (err: any) {
+      console.warn('[persistence] Firestore initialization failed, falling back to FilePromptRepository for persistence:', err.message || err);
     }
-
-    console.warn('[persistence] Firestore initialization failed in non-production mode, falling back to FilePromptRepository for offline development:', err.message || err);
-    const fileRepo = new FilePromptRepository(process.env.DATA_DIR);
-    await fileRepo.init();
-    repositoryInstance = fileRepo;
-    return repositoryInstance;
   }
+
+  // Local filesystem persistence (reliable for local & standalone instances)
+  const fileRepo = new FilePromptRepository(process.env.DATA_DIR);
+  await fileRepo.init();
+  repositoryInstance = fileRepo;
+  return repositoryInstance;
 }
 
 export * from './promptRepository';
