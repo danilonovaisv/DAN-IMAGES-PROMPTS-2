@@ -13,4 +13,4 @@ Validate the behavior affected by the current change.
 5. Do not install a test framework or rewrite snapshots unless the task authorizes it.
 6. Report commands, results, skipped checks, and residual risk.
 
-Current baseline: no automated test runner is configured. State this plainly until that changes.
+Configured test command: `pnpm test` (executes `tests/persistence.test.ts` and `tests/api-persistence.test.ts` via `tsx`).

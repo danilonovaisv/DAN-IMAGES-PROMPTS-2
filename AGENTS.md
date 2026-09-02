@@ -6,8 +6,8 @@ Treat every prompt as a reusable creative asset composed of source text, visual 
 
 ## Current Architecture
 
-- Frontend: React 19, Vite 6, Tailwind CSS 4, Motion, and Lucide React.
-- Backend: Node.js, TypeScript, Express 4, and Multer.
+- Frontend: React 19, Vite 8, Tailwind CSS 4, Motion, and Lucide React.
+- Backend: Node.js, TypeScript, Express 5, and Multer.
 - AI: server-side Gemini integration through `@google/genai`.
 - Persistence: local JSON files and filesystem uploads. Firebase, OpenAI, and external databases are roadmap items, not current capabilities.
 - Development and production are served from the Express entrypoint in `server.ts`.
