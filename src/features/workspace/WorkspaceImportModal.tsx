@@ -105,81 +105,85 @@ export const WorkspaceImportModal: React.FC<WorkspaceImportModalProps> = ({
     setIsAuthorizing(true);
     setAuthError(null);
 
+    // 1. Prefer Google Identity Services (GIS) token client for Workspace scopes
     try {
-      // 1. Try Firebase Auth popup
+      const clientId =
+        (firebaseConfig as Record<string, string | undefined>).oAuthClientId ||
+        import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+        '1044209571335-1pnbfjpan7npjb2bqlhv7bhffji9cror.apps.googleusercontent.com';
+
+      if (window.google?.accounts?.oauth2) {
+        const client = window.google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope:
+            'https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/drive.readonly',
+          callback: (response: any) => {
+            setIsAuthorizing(false);
+            if (response && response.access_token) {
+              setAccessToken(response.access_token);
+              setManualAccessToken(response.access_token);
+              showToast(
+                'Conta Google Conectada!',
+                'Autorização concedida via Google. Agora clique em "Iniciar Importação".',
+                'success'
+              );
+            } else if (response?.error) {
+              const msg = response.error_description || response.error || 'Falha na autorização';
+              setAuthError(msg);
+              showToast('Aviso de Login', 'Use a aba "Colar Conteúdo & Imagens" para importar com 1 clique.', 'info');
+            }
+          },
+          error_callback: (err: any) => {
+            setIsAuthorizing(false);
+            const errMsg = err?.type === 'popup_closed'
+              ? 'Janela de login fechada pelo usuário'
+              : 'Restrição de pop-up no navegador';
+            setAuthError(errMsg);
+            showToast(
+              'Aviso de Pop-up',
+              'Utilize a aba "Colar Conteúdo & Imagens" para importar instantaneamente sem login.',
+              'info'
+            );
+          },
+        });
+        client.requestAccessToken({ prompt: 'consent' });
+        return;
+      }
+    } catch (gisErr: any) {
+      console.warn('GIS TokenClient indisponível, tentando Firebase Auth popup:', gisErr);
+    }
+
+    // 2. Fallback to Firebase Auth popup if GIS is not ready
+    try {
       const result = await googleSignIn();
       if (result && result.accessToken) {
         setAccessToken(result.accessToken);
         if (result.user.email) setUserEmail(result.user.email);
         showToast(
           'Conta Google Conectada!',
-          'Autorização concedida com sucesso. Agora você pode clicar em "Iniciar Importação".',
+          'Autorização concedida com sucesso. Agora clique em "Iniciar Importação".',
           'success'
         );
         setIsAuthorizing(false);
         return;
       }
     } catch (firebaseErr: any) {
-      console.warn('Tentativa com Firebase Auth popup falhou, tentando fallback com Google Identity Services:', firebaseErr);
-
-      // 2. Fallback to Google Identity Services (GIS) with accurate OAuth Client ID
-      try {
-        const clientId =
-          (firebaseConfig as Record<string, string | undefined>).oAuthClientId ||
-          import.meta.env.VITE_GOOGLE_CLIENT_ID ||
-          '1044209571335-1pnbfjpan7npjb2bqlhv7bhffji9cror.apps.googleusercontent.com';
-
-        if (window.google?.accounts?.oauth2) {
-          const client = window.google.accounts.oauth2.initTokenClient({
-            client_id: clientId,
-            scope:
-              'https://www.googleapis.com/auth/documents.readonly https://www.googleapis.com/auth/drive.readonly',
-            callback: (response: any) => {
-              setIsAuthorizing(false);
-              if (response && response.access_token) {
-                setAccessToken(response.access_token);
-                setManualAccessToken(response.access_token);
-                showToast(
-                  'Conta Google Conectada!',
-                  'Autorização concedida via Google. Agora clique em "Iniciar Importação".',
-                  'success'
-                );
-              } else if (response?.error) {
-                const msg = response.error_description || response.error || 'Falha na autorização';
-                setAuthError(msg);
-                showToast('Aviso de Login', 'Use a aba "Colar Conteúdo & Imagens" para importar com 1 clique.', 'info');
-              }
-            },
-            error_callback: (err: any) => {
-              setIsAuthorizing(false);
-              const errMsg = err?.type === 'popup_closed'
-                ? 'Janela de login fechada'
-                : 'Restrição de pop-up no navegador';
-              setAuthError(errMsg);
-              showToast(
-                'Aviso de Pop-up',
-                'Utilize a aba "Colar Conteúdo & Imagens" para importar instantaneamente.',
-                'info'
-              );
-            },
-          });
-          client.requestAccessToken({ prompt: 'consent' });
-          return;
-        }
-      } catch (gisErr: any) {
-        console.warn('Fallback GIS também falhou:', gisErr);
-      }
-
+      console.warn('Firebase Auth popup retornou erro:', firebaseErr);
       setIsAuthorizing(false);
+      
+      const isInvalidCred = firebaseErr?.code === 'auth/invalid-credential' || firebaseErr?.message?.includes('invalid-credential') || firebaseErr?.message?.includes('invalid_client');
       const isPopupBlocked = firebaseErr?.code === 'auth/popup-blocked' || firebaseErr?.code === 'auth/popup-closed-by-user';
-      const msg = isPopupBlocked
+      
+      const msg = isInvalidCred
+        ? 'O provedor Google OAuth do Firebase Console requer configuração do Segredo do Cliente. Recomendamos utilizar a importação direta pela aba ao lado.'
+        : isPopupBlocked
         ? 'O pop-up de login foi bloqueado ou fechado pelo navegador.'
         : (firebaseErr.message || 'Não foi possível autenticar.');
       
       setAuthError(msg);
       showToast(
         'Dica de Importação',
-        'Você pode usar a aba "Colar Conteúdo & Imagens" ao lado para importar diretamente sem precisar de login!',
+        'Use a aba "Colar Conteúdo & Imagens" para importar instantaneamente sem precisar de autenticação OAuth!',
         'info'
       );
     }

@@ -39,6 +39,8 @@ service cloud.firestore {
         && (!('isFavorite' in data) || data.isFavorite is bool)
         && (!('copyCount' in data) || data.copyCount is number)
         && (!('notes' in data) || (data.notes is string && data.notes.size() <= 5000))
+        && (!('userId' in data) || (data.userId is string && data.userId.size() <= 128))
+        && (!('createdBy' in data) || (data.createdBy is string && data.createdBy.size() <= 200))
         && data.createdAt is string && isValidTimestamp(data.createdAt)
         && data.updatedAt is string && isValidTimestamp(data.updatedAt);
     }

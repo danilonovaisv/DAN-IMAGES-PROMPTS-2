@@ -51,6 +51,8 @@ export interface PromptItem {
   isFavorite: boolean;
   copyCount: number;
   notes?: string;
+  userId?: string;
+  createdBy?: string;
   createdAt: string;
   updatedAt: string;
 }

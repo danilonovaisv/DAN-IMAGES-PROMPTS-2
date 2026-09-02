@@ -8,6 +8,7 @@ import { getPromptRepository } from './server/repositories';
 import { analyzeAndDecomposePrompt } from './server/ai/promptAnalyzer';
 import { validatePromptInput } from './server/validation/promptSchema';
 import { importPromptsFromWorkspace, importPromptsFromRawTextAndFiles } from './server/workspace/googleWorkspaceService';
+import { authenticateFirebaseToken, requireAuth } from './server/validation/authMiddleware';
 
 const DEFAULT_PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
@@ -41,9 +42,10 @@ async function startServer(customPort?: number) {
   // Initialize persistence repository
   const repository = await getPromptRepository();
 
-  // Middleware for body parsing
+  // Middleware for body parsing and authentication
   app.use(express.json({ limit: '20mb' }));
   app.use(express.urlencoded({ extended: true, limit: '20mb' }));
+  app.use(authenticateFirebaseToken);
 
   // Serve uploaded images statically
   app.use('/api/uploads', express.static(UPLOADS_DIR));
@@ -168,7 +170,11 @@ async function startServer(customPort?: number) {
     }
 
     try {
-      const created = await repository.createPrompt(req.body);
+      const promptPayload = {
+        ...req.body,
+        ...(req.user?.uid ? { userId: req.user.uid, createdBy: req.user.email || req.user.name || req.user.uid } : {}),
+      };
+      const created = await repository.createPrompt(promptPayload);
       res.status(201).json(created);
     } catch (err: any) {
       console.error('Error creating prompt:', err);
@@ -300,6 +306,13 @@ async function startServer(customPort?: number) {
 
   // Reset database to initial sample data
   app.post('/api/reset-data', async (req, res) => {
+    // In production, guard reset operations against accidental data destruction
+    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_PROD_RESET !== 'true') {
+      return res.status(403).json({
+        error: 'Restauração de fábrica bloqueada em ambiente de produção para proteção de dados.',
+      });
+    }
+
     try {
       await repository.resetToDefaults();
       res.json({ success: true, message: 'Dados restaurados para o padrão.' });

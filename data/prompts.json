@@ -1,5 +1,347 @@
 [
   {
+    "title": "CELULAR",
+    "rawPrompt": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Insira o design gráfico fornecido exatamente na área da tela do mockup de celular, substituindo integralmente o conteúdo em branco do display. Ajuste o layout para respeitar com precisão as proporções e o formato da tela do dispositivo, incluindo bordas, cantos arredondados e alinhamento interno correto. Aplique correção de perspectiva para que o design acompanhe o ângulo real do smartphone apoiado no sofá, garantindo coerência geométrica com o ponto de vista da câmera. Preserve a iluminação original da cena, integrando o design à superfície do vidro com reflexos sutis, leve atenuação de contraste e interação realista com a luz ambiente. Garanta que o conteúdo pareça exibido na tela do celular, com aparência natural, sem distorções, mantendo total legibilidade e um resultado final fotorrealista e visualmente integrado ao mockup.",
+    "category": "cat-cinematic",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328713005-20_-_Celular_png.png",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "CELULAR"
+    },
+    "tags": [
+      "IA",
+      "Imagem",
+      "Gerativo",
+      "midjourney-v6",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Insira o design gráfico fornecido exatamente na área da tela do mockup de celular, substituindo integralmente o conteúdo em branco do display. ",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Estilo visual de alta fidelidade",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": ""
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328715164-6znd9",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:58:35.164Z",
+    "updatedAt": "2026-09-02T05:58:35.164Z"
+  },
+  {
+    "title": "OUTDOOR",
+    "rawPrompt": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Integre o layout gráfico do cartaz fornecido diretamente na área central do mockup de outdoor, substituindo completamente o conteúdo vazio do painel. Ajuste o enquadramento para que a arte respeite exatamente as proporções do display do outdoor, aplicando correção de perspectiva para coincidir com o ponto de vista da câmera da cena original. Garanta que o cartaz pareça fisicamente impresso e instalado no suporte, com alinhamento preciso às bordas internas do frame. Preserve a iluminação ambiental da cena, aplicando leves variações de luz e sombra sobre a arte para que ela interaja de forma realista com o ambiente externo, incluindo sutis reflexos, perda mínima de contraste e integração natural com o contexto urbano e a profundidade de campo existente. Evite distorções no conteúdo gráfico e mantenha total legibilidade dos textos, assegurando um resultado final fotorrealista, coerente e visualmente integrado ao mockup do outdoor.",
+    "category": "cat-cinematic",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328669932-19_-_Outdoor_png.png",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "OUTDOOR"
+    },
+    "tags": [
+      "IA",
+      "Imagem",
+      "Gerativo",
+      "midjourney-v6",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Integre o layout gráfico do cartaz fornecido diretamente na área central do mockup de outdoor, substituindo completamente o conteúdo vazio do p",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Estilo visual de alta fidelidade",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": ""
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328713003-6k7pn",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:58:33.003Z",
+    "updatedAt": "2026-09-02T05:58:33.003Z"
+  },
+  {
+    "title": "DESKTOP",
+    "rawPrompt": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Insira o screenshot fornecido diretamente na tela do monitor apresentado, aplicando-o como um mockup realista. Ajuste o conteúdo para respeitar a perspectiva da tela, com correção precisa de ângulo, escala e alinhamento, garantindo que o screenshot acompanhe a inclinação natural do monitor. Aplique a máscara exata aos limites da tela, preservando as bordas e o acabamento do display, com leve adaptação de reflexos e brilho para integrar o conteúdo exibido à superfície do monitor. Mantenha a estrutura, o suporte e o ambiente original do monitor inalterados, focando exclusivamente na substituição da área da tela pelo screenshot, de forma limpa, profissional e coerente com um mockup de produto de alta fidelidade.",
+    "category": "cat-cinematic",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328666962-18_-_Desktop_png.png",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "DESKTOP"
+    },
+    "tags": [
+      "IA",
+      "Imagem",
+      "Gerativo",
+      "midjourney-v6",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Insira o screenshot fornecido diretamente na tela do monitor apresentado, aplicando-o como um mockup realista. Ajuste o conteúdo para respeitar",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Estilo visual de alta fidelidade",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": ""
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328669931-15uvo",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:57:49.931Z",
+    "updatedAt": "2026-09-02T05:57:49.931Z"
+  },
+  {
+    "title": "LOW ANGLE SHOT",
+    "rawPrompt": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Low angle worm's eye shot, com a câmera posicionada abaixo do nível dos olhos do sujeito, apontada para cima, criando uma perspectiva ascendente clara e intencional. O enquadramento deve enfatizar a imponência do sujeito, alongando visualmente a silhueta e reforçando sensação de grandeza, poder ou destaque visual. A posição da câmera deve estar suficientemente baixa para que o ângulo seja imediatamente perceptível, sem causar distorções exageradas. A composição deve preservar a leitura correta do corpo e da postura, utilizando a perspectiva inferior como elemento narrativo e estético, característica comum da linguagem cinematográfica e fotográfica de impacto dramático.",
+    "category": "cat-cinematic",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328666165-17_-_Low_angle_shot_jpg.jpg",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "LOW ANGLE SHOT"
+    },
+    "tags": [
+      "IA",
+      "Imagem",
+      "Gerativo",
+      "midjourney-v6",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Low angle worm's eye shot, com a câmera posicionada abaixo do nível dos olhos do sujeito, apontada para cima, criando uma perspectiva ascendent",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Estilo visual de alta fidelidade",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": ""
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328666960-rflr4",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:57:46.960Z",
+    "updatedAt": "2026-09-02T05:57:46.960Z"
+  },
+  {
+    "title": "HIGH ANGLE SHOT",
+    "rawPrompt": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: High angle shot, com a câmera posicionada acima do nível dos olhos do sujeito, apontada para baixo em direção ao corpo. O enquadramento deve evidenciar a perspectiva descendente, alterando levemente as proporções visuais para reforçar a sensação de observação superior. A composição deve manter o sujeito claramente legível dentro do frame, com o ângulo elevado influenciando a leitura da postura e da silhueta, sem distorções excessivas. A altura da câmera deve ser suficiente para que o ponto de vista superior seja imediatamente perceptível, característica típica de fotografia e linguagem cinematográfica que enfatiza domínio espacial e perspectiva hierárquica.",
+    "category": "cat-photorealism",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328665433-16_-_High_angle_shot_jpg.jpg",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "HIGH ANGLE SHOT"
+    },
+    "tags": [
+      "Fotografia Realista",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: High angle shot, com a câmera posicionada acima do nível dos olhos do sujeito, apontada para baixo em direção ao corpo. O enquadramento deve ev",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Fotografia Realista",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": ""
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328666163-94igi",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:57:46.163Z",
+    "updatedAt": "2026-09-02T05:57:46.163Z"
+  },
+  {
+    "title": "EXTREME LONG SHOT",
+    "rawPrompt": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Extreme long-shot, com enquadramento extremamente aberto, onde o sujeito aparece em escala reduzida dentro da composição, ocupando apenas uma pequena porção do quadro. A câmera deve estar posicionada a grande distância do sujeito, priorizando a leitura do espaço ao redor e a relação entre a figura humana e o ambiente. O enquadramento deve incluir amplas áreas de fundo e solo, reforçando a sensação de amplitude, contexto e isolamento visual do personagem. A composição deve manter o sujeito totalmente visível de corpo inteiro, com proporções corretas, enfatizando a dimensão do cenário em detrimento dos detalhes individuais, característica típica de planos de estabelecimento e fotografia cinematográfica de grande escala.",
+    "category": "cat-photorealism",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328658025-15_-_Extreme_long_shot_jpg.jpg",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "EXTREME LONG SHOT"
+    },
+    "tags": [
+      "Fotografia Realista",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Extreme long-shot, com enquadramento extremamente aberto, onde o sujeito aparece em escala reduzida dentro da composição, ocupando apenas uma p",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Fotografia Realista",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": ""
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328665431-4t243",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:57:45.431Z",
+    "updatedAt": "2026-09-02T05:57:45.431Z"
+  },
+  {
+    "title": "CLOSE-UP SHOT",
+    "rawPrompt": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Close up shot, com enquadramento fechado focado no rosto do sujeito, capturando predominantemente a face e parte superior do pescoço, excluindo o restante do corpo. A câmera deve estar posicionada em eixo frontal ou levemente angular, priorizando a expressão facial, os detalhes da pele, textura, olhar e traços anatômicos. Utilize uma distância focal adequada para close-up, garantindo mínima distorção facial, com profundidade de campo reduzida para destacar o sujeito em relação ao fundo, mantendo nitidez precisa nos olhos e suavidade progressiva nas áreas periféricas do rosto.",
+    "category": "cat-cinematic",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328633378-14_-_Close-up_shot_jpg.jpg",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "CLOSE-UP SHOT"
+    },
+    "tags": [
+      "IA",
+      "Imagem",
+      "Gerativo",
+      "midjourney-v6",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "CATEGORIA: MODA & EDITORIAL\n\nPrompt: Close up shot, com enquadramento fechado focado no rosto do sujeito, capturando predominantemente a face e parte superior do pescoço, excluindo",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Estilo visual de alta fidelidade",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": ""
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328658023-xec1p",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:57:38.023Z",
+    "updatedAt": "2026-09-02T05:57:38.023Z"
+  },
+  {
+    "title": "13. FULL BODY SHOT",
+    "rawPrompt": "Prompt: Crie uma imagem de corpo inteiro, com o sujeito enquadrado da cabeça aos pés, mantendo todo o corpo completamente visível dentro do frame, sem cortes nas extremidades. A câmera deve estar posicionada em eixo frontal e altura neutra, garantindo proporções naturais do corpo, postura íntegra e leitura clara da silhueta. O enquadramento deve preservar espaço adequado acima da cabeça e abaixo dos pés, assegurando equilíbrio visual e uma composição vertical estável, típica de fotografia editorial ou de moda com foco na totalidade da figura humana.",
+    "category": "cat-photorealism",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328612225-13_-_Full_body_shot_jpg.jpg",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "13. FULL BODY SHOT"
+    },
+    "tags": [
+      "Fotografia Realista",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "Prompt: Crie uma imagem de corpo inteiro, com o sujeito enquadrado da cabeça aos pés, mantendo todo o corpo completamente visível dentro do frame, sem cortes nas extremidades. A câ",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Fotografia Realista",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": ""
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328633377-bwtbj",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:57:13.377Z",
+    "updatedAt": "2026-09-02T05:57:13.377Z"
+  },
+  {
+    "title": "GLITTER\u000bCATEGORIA: MODA & EDITORIAL\u000bUse o retrato ...",
+    "rawPrompt": "GLITTER\u000bCATEGORIA: MODA & EDITORIAL\u000bUse o retrato enviado como referência facial exata. Preserve a identidade, as proporções e a estrutura facial completas. Não altere as feições.\u000bRetrato de busto e ombros. Ângulo de 3/4. Rosto ligeiramente virado para longe da luz. Olhos voltados para a câmera.\u000bIluminação: Luz principal direcional e forte a 45°. Feixe estreito. Ilumine apenas parte do rosto (uma maçã do rosto, ponte do nariz, lábio superior). 60-70% do rosto na sombra. Luz de preenchimento mínima ou inexistente. Sombras profundas, porém detalhadas. Forte contraste de claro-escuro. Sem luz de embelezamento suave.\u000bLuz de contorno: Forte luz de fundo azul delineando o cabelo e os ombros. Separação nítida das bordas azuis. Não ilumine o rosto com a luz de contorno.\u000bFundo: Fundo azul sólido e saturado, sem emendas. Exposição uniforme.\u000bTratamento de cor: Converta a pele e o corpo visível para preto e branco de alto contraste. Mantenha o fundo azul. Mantenha a borda azul. Mantenha o glitter totalmente iridescente e colorido.\u000bMaquiagem: Glitter iridescente multicolorido intenso ao redor dos olhos. Partículas refletoras grandes.\u000bVestimenta: Traje preto minimalista e semi-elegante. Silhueta estruturada. Alta resolução. Foco nítido no olho iluminado. Acabamento editorial cinematográfico e misterioso.\u000b\u000b---\u000b\u000bSTICKERS\u000bCATEGORIA: MODA & EDITORIAL\u000bUse o retrato enviado como referência facial exata. Preserve a identidade e a estrutura facial completas. Não altere as feições. Retrato centralizado da cabeça e ombros. Queixo levemente levantado. Boca ligeiramente aberta. Forte presença fashion.\u000bIluminação: Iluminação de estúdio suave, porém direcional. Luz principal uniforme, estilo beleza, vinda da frente. Sombra sutil sob o queixo e maçãs do rosto. Destaques naturais da pele. Sem contraste plano - contraste suave. Iluminação de beleza editorial de alta qualidade.\u000bFundo: Fundo neutro claro e limpo (branco suave ou cinza claro). Minimalista e suave.\u000bComposição de adesivos: Cubra todo o rosto densamente com adesivos coloridos selecionados. Em camadas, mas visualmente equilibrados. Logotipos fun, tipografia, mini ilustrações, símbolos. Os adesivos devem seguir a curvatura facial. Textura adesiva natural. Sombras leves e elevação realista das bordas. Alguma sobreposição. Alto realismo. Não pareça colado digitalmente. Os olhos permanecem visíveis. Os lábios parcialmente visíveis.\u000bTratamento estético: Leve dessaturação. Granulação sutil. Textura cinematográfica suave. Vibração de revista de moda editorial. Cores equilibradas, sem saturação excessiva. Limpo, porém artístico. Ultra alta resolução. Foco nítido. Acabamento fotorrealista.\u000b\u000b---\u000b\u000bCOLAGEM\u000bCATEGORIA: MODA & EDITORIAL\u000bUtilize a foto anexa como referência facial, preservando a identidade facial da pessoa com precisão e consistência.\u000bCrie uma composição em estilo colagem onde a pessoa aparece como uma silhueta recortada sobreposta a um fundo brutalista escuro. A figura é plana e gráfica, com bordas de corte visíveis, textura de papel e rabiscos abstratos ao redor do corpo. A colagem tem um caráter experimental e expressivo, combinando fotografia com intervenção gráfica e sobreposições ásperas. Alto contraste, textura levemente granulada, estética editorial crua de técnica mista.\u000b\u000b---\u000b\u000bCOMPOSIÇÃO NARRATIVA\u000b**Prompt:**\u000bUtilize a foto anexa como referência facial, preservando a identidade facial da pessoa com precisão e consistência. Crie uma composição cinematográfica dividida em três quadros horizontais empilhados verticalmente. Cada quadro mostra a mesma pessoa em uma pose e momento diferentes, interagindo com o vento e o espaço. O primeiro quadro é um plano de baixo para cima, o segundo é um close-up e o terceiro é um plano lateral médio. O cenário em todos os quadros é um céu aberto com nuvens dramáticas e um vasto campo. Luz suave e cinematográfica, sensação de fotograma, cores naturais, tom poético e emotivo.\u000b\u000b---\u000b\u000b### 05. CYBERSHOT\u000b**Prompt:**\u000bUse a foto anexa como referência facial, preservando a identidade facial da pessoa com precisão. Mantenha a mesma estrutura facial, proporções e características principais. Não estilize, substitua ou altere a identidade.\u000bUma fotografia em close-up do sujeito é exibida na tela LCD de uma câmera digital compacta Canon. O corpo da câmera emoldura a imagem, com botões físicos, seletores e plástico texturizado claramente visíveis, incluindo o seletor FUNC/SET, o botão DISP e a etiqueta \"IMAGE STABILIZER\" na lateral do corpo da câmera.\u000bNa tela da câmera, a foto mostra o mesmo sujeito em um ambiente interno à noite, capturada com um flash embutido. O flash direto e intenso cria destaques nítidos em seu rosto e cabelo. A expressão parece espontânea e natural.\u000bO fundo é um quarto escuro e desorganizado, suavemente desfocado devido à atenuação do flash e à pouca profundidade de campo. O contraste entre o flash brilhante e a baixa luz ambiente cria uma sensação crua e documental.\u000bO clima geral é de sinceridade, autenticidade e nostalgia, remetendo às fotos instantâneas de câmeras digitais compactas do início dos anos 2000. As cores são levemente atenuadas com tons frios, forte contraste do flash, ruído digital sutil e a granulação e o brilho autênticos de uma tela LCD.\u000bSem texto, logotipos ou sobreposições de interface dentro da própria pré-visualização da foto.\u000b\u000b---\u000b\u000b### 06. GIGANTE NA CIDADE\u000b**Prompt:**\u000bUm editorial de moda urbano e cinematográfico, apresentando o personagem de referência de forma gigante e colossal.\u000bO personagem de referência caminha em meio a arranha-céus e prédios como se fossem uma passarela. Escala extrema, poder inegável. Um dos pés pressiona os telhados enquanto ela avança.\u000bEla veste um traje preto de alta costura ultradramático, luxuoso, ousado e completamente livre de textos, logotipos ou símbolos.\u000bPose feroz e teatral com queixo erguido e braço levantado.\u000bFilmado de um ângulo extremamente baixo para amplificar o drama e a dominância.\u000bLuz dourada cinematográfica, sombras marcantes, detalhes nítidos. Moda encontra o surrealismo com uma energia impactante - icônico, poderoso, glamoroso e criado para visuais de alto impacto nas redes sociais.\u000b\u000b---\u000b\u000bENSAIO EM ESTÚDIO\u000bCATEGORIA: MODA & EDITORIAL\u000bUse a foto anexa como referência facial, preservando a identidade facial da pessoa com precisão. Mantenha a mesma estrutura facial, proporções e características principais. Não estilize, substitua ou altere a identidade.\u000bA pessoa está sentada em uma pose confiante em uma cadeira vintage de couro e metal cromado em uma pose de editorial de moda. Ela está em um estúdio fotográfico.\u000bIluminação de estúdio cinematográfica lateral, leve fumaça criando uma névoa suave, sombras dramáticas, tons suaves, composição refinada, fotografia ultra-realista, atmosfera melancólica, capturada em filme Portra 400.\u000b\u000b---\u000b\u000b### 08. MÁQUINA DE FOTOS VINTAGE\u000b**Prompt:**\u000bUtilize a foto anexa como referência facial, preservando a identidade facial da pessoa com precisão e consistência. Mantenha a mesma estrutura facial, proporções e características principais. Não estilize, substitua ou altere a identidade. Crie uma photo strip vintage em preto e branco de cabine fotográfica, layout vertical com três quadros de proporção 3x4 sobrepostos separados por bordas pretas. Primeiro quadro: retrato, mostrando cabeça e ombros, expressão neutra, sombras suaves, textura de filme levemente granulada. Fundo branco. Segundo quadro: a pessoa segura uma pequena câmera vintage de 35 mm perto do rosto, flash visível, um olho olhando pelo visor, sensação espontânea e sincera. Fundo branco. Terceiro quadro: retrato espontâneo, expressão relaxada. Fundo branco. Fotografado em estilo analógico autêntico, estética de cabine fotográfica dos anos 1960, preto e branco de alto contraste, granulação sutil, leves arranhões e marcas de poeira, vinheta suave, exposição imperfeita, sensação de fotografia documental, íntimo e cru, textura de pele realista, iluminação cinematográfica. A tira fotográfica está sobre uma mesa de cimento, estilo brutalista.\u000b\u000b---\u000b\u000b\u000b\u000b### 09. REALISMO PARA ANIMAÇÃO\u000b**Prompt:**\u000bConverta a foto de entrada em um retrato de desenho animado [estilo de ilustração], preservando fielmente as características faciais reais da pessoa original, incluindo tom de pele, sobrancelhas, lábios, formato do nariz, estrutura óssea geral, enquanto exagera sutilmente as proporções para um visual estilizado de desenho animado.\u000b\u000b---\u000b\u000b### 10. ANIMAÇÃO PARA REALISMO\u000b**Prompt:**\u000bConverta a foto em uma fotografia totalmente realista, preservando tom de pele, textura natural, sobrancelhas, lábios, formato do nariz e estrutura óssea original. Remova qualquer traço de ilustração: sem cores chapadas, bordas vetoriais ou superfícies estilizadas. O resultado deve parecer uma fotografia cinematográfica real capturada por câmera profissional.\u000b\u000b---\u000b\u000b## CAPÍTULO 03 — RESOLUÇÃO DE IMAGEM\u000b\u000b### 11. UPSCALE\u000b**Prompt:**\u000bRetexturize com fotorrealismo extremo (hiper-realismo 8K). Aplique 'skin texture detail' para revelar poros visíveis, sardas sutis e imperfeições naturais da derme, eliminando o aspecto 'plastic look' de IA. Refine as roupas com 'high-fidelity fabric weave', destacando a trama das fibras, dobras realistas e micro-texturas de tecido. Mantenha 100% da identidade, silhueta, cores e composição original. Corrija artefatos e distorções, preservando o motion blur e a iluminação volumétrica original. Renderização estilo 'Raw Photo' com foco nítido e detalhes táteis.\u000b\u000b---\u000b\u000b### 12. RESTAURAÇÃO DE IMAGEM\u000b**Prompt:**\u000b```json\u000b{\u000b  \"task\": \"image_restoration_upscale\",\u000b  \"positive_prompt\": \"Restore and enhance the provided image. Preserve original identity, facial structure, proportions and composition. High-fidelity photo restoration, ultra-realistic, natural skin texture, accurate details, professional photographic look. 4K output, sharp but natural focus, modern cinematic lighting, subtle volumetric lighting, professional color grading, depth of field, HDR. Shot on Arri Alexa, raw photo aesthetic, masterpiece.\",\u000b  \"negative_prompt\": \"Creative reinterpretation, style change, identity alteration, face reshaping, exaggerated features, cartoonish, painting, illustration, over-sharpening, plastic skin, blur, noise, film grain, jpeg artifacts, distortion, bad anatomy, overexposed, underexposed, washed out colors.\",\u000b  \"parameters\": {\u000b    \"steps\": 30,\u000b    \"cfg_scale\": 6.5,\u000b    \"denoising_strength\": 0.45,\u000b    \"upscaler\": \"4x_NMKD_Siax_200k\",\u000b    \"target_resolution\": \"4k\"\u000b  }\u000b}",
+    "category": "cat-photorealism",
+    "targetModel": "midjourney-v6",
+    "image": {
+      "url": "/api/uploads/drive-1788328596665-36_-_Mudan_a_de_ilumina__o_png.png",
+      "storageType": "local",
+      "aspectRatio": "16:9",
+      "alt": "GLITTER\u000bCATEGORIA: MODA & EDITORIAL\u000bUse o retrato ..."
+    },
+    "tags": [
+      "Fotografia Realista",
+      "Cinemático",
+      "3D Render",
+      "Arte Digital",
+      "google-workspace"
+    ],
+    "structured": {
+      "subject": "GLITTER\u000bCATEGORIA: MODA & EDITORIAL\u000bUse o retrato enviado como referência facial exata. Preserve a identidade, as proporções e a estrutura facial completas. Não altere as feições.\u000b",
+      "environment": "Ambiente detalhado com atmosfera coerente com o sujeito",
+      "lighting": "Iluminação equilibrada com luz principal e sombras suaves",
+      "camera": "Lente padrão com nitidez detalhada e profundidade de campo controlada",
+      "composition": "Enquadramento focado no tema central com proporção harmoniosa",
+      "style": "Fotografia Realista, Cinemático, 3D Render, Arte Digital",
+      "colors": "Paleta cromática balanceada e contraste dinâmico",
+      "instructions": "Ajuste os parâmetros conforme o modelo desejado.",
+      "parameters": {
+        "aspectRatio": "16:9",
+        "rawParams": "---\u000b\u000bSTICKERS\u000bCATEGORIA ---\u000b\u000bCOLAGEM\u000bCATEGORIA ---\u000b\u000bCOMPOSI ---\u000b\u000b ---\u000b\u000b ---\u000b\u000bENSAIO EM EST ---\u000b\u000b ---\u000b\u000b\u000b\u000b ---\u000b\u000b ---\u000b\u000b ---\u000b\u000b"
+      }
+    },
+    "isFavorite": false,
+    "notes": "Importado do Google Docs & Drive.",
+    "id": "prompt-1788328612223-kqb99",
+    "copyCount": 0,
+    "createdAt": "2026-09-02T05:56:52.223Z",
+    "updatedAt": "2026-09-02T05:56:52.223Z"
+  },
+  {
     "id": "prompt-1",
     "title": "Retrato Cibernético em Luz Neon de Tóquio",
     "rawPrompt": "Cinematic portrait of a futuristic cyber-enhanced nomad woman standing in a rainy alley in Shinjuku Tokyo, neon light reflections on wet pavement, volumetric magenta and cyan fog, shot on 35mm anamorphic lens, shallow depth of field, photorealistic skin texture with subtle micro-circuitry --ar 16:9 --v 6.1 --style raw",

@@ -1,5 +1,6 @@
 import { Type } from '@google/genai';
 import { getGeminiAI } from './gemini';
+import { validateAIAnalysisOutput } from '../validation/aiAnalysisSchema';
 
 export interface AnalyzePromptInput {
   rawPrompt: string;
@@ -82,127 +83,161 @@ ${imageBase64 ? 'Uma imagem de referência visual foi anexada. Incorpore os deta
       });
     }
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.7-flash',
-      contents: { parts },
-      config: {
-        systemInstruction,
-        temperature: 0.2,
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            title: {
-              type: Type.STRING,
-              description: 'Título conciso e descritivo para o prompt em português',
-            },
-            suggestedCategory: {
-              type: Type.STRING,
-              description: 'Categoria sugerida (ex: photorealism, cinematic, architecture, character, product, landscapes, illustration, editorial)',
-            },
-            tags: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING },
-              description: '4 a 8 tags descritivas para catalogação e busca',
-            },
-            subject: {
-              type: Type.STRING,
-              description: 'Descrição precisa do sujeito principal',
-            },
-            environment: {
-              type: Type.STRING,
-              description: 'Descrição do ambiente, cenário e atmosfera',
-            },
-            lighting: {
-              type: Type.STRING,
-              description: 'Descrição da iluminação, fontes de luz e sombras',
-            },
-            camera: {
-              type: Type.STRING,
-              description: 'Descrição da câmera, lente, ângulo e profundidade de campo',
-            },
-            composition: {
-              type: Type.STRING,
-              description: 'Descrição da composição e enquadramento',
-            },
-            style: {
-              type: Type.STRING,
-              description: 'Descrição do estilo artístico, estética e renderização',
-            },
-            colors: {
-              type: Type.STRING,
-              description: 'Descrição da paleta de cores e tonalidades',
-            },
-            instructions: {
-              type: Type.STRING,
-              description: 'Instruções técnicas, qualidade ou aspectos a evitar',
-            },
-            aspectRatio: {
-              type: Type.STRING,
-              description: 'Proporção recomendada, ex: 16:9, 4:5, 1:1, 9:16',
-            },
-            negativePrompt: {
-              type: Type.STRING,
-              description: 'Elementos indesejados para negative prompt se aplicável',
-            },
-            rawParams: {
-              type: Type.STRING,
-              description: 'Parâmetros brutos em sintaxe do modelo (ex: --ar 16:9 --v 6.1)',
-            },
-            formattedPrompt: {
-              type: Type.STRING,
-              description: 'Prompt otimizado e bem pontuado para envio ao gerador de imagem',
-            },
-            analysisNotes: {
-              type: Type.STRING,
-              description: 'Breve nota com dicas de como tirar o melhor proveito deste prompt',
+    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+    let text = '';
+    let lastError: any = null;
+
+    for (const modelName of modelsToTry) {
+      try {
+        const response = await ai.models.generateContent({
+          model: modelName,
+          contents: { parts },
+          config: {
+            systemInstruction,
+            temperature: 0.2,
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                title: {
+                  type: Type.STRING,
+                  description: 'Título conciso e descritivo para o prompt em português',
+                },
+                suggestedCategory: {
+                  type: Type.STRING,
+                  description: 'Categoria sugerida (ex: photorealism, cinematic, architecture, character, product, landscapes, illustration, editorial)',
+                },
+                tags: {
+                  type: Type.ARRAY,
+                  items: { type: Type.STRING },
+                  description: '4 a 8 tags descritivas para catalogação e busca',
+                },
+                subject: {
+                  type: Type.STRING,
+                  description: 'Descrição precisa do sujeito principal',
+                },
+                environment: {
+                  type: Type.STRING,
+                  description: 'Descrição do ambiente, cenário e atmosfera',
+                },
+                lighting: {
+                  type: Type.STRING,
+                  description: 'Descrição da iluminação, fontes de luz e sombras',
+                },
+                camera: {
+                  type: Type.STRING,
+                  description: 'Descrição da câmera, lente, ângulo e profundidade de campo',
+                },
+                composition: {
+                  type: Type.STRING,
+                  description: 'Descrição da composição e enquadramento',
+                },
+                style: {
+                  type: Type.STRING,
+                  description: 'Descrição do estilo artístico, estética e renderização',
+                },
+                colors: {
+                  type: Type.STRING,
+                  description: 'Descrição da paleta de cores e tonalidades',
+                },
+                instructions: {
+                  type: Type.STRING,
+                  description: 'Instruções técnicas, qualidade ou aspectos a evitar',
+                },
+                aspectRatio: {
+                  type: Type.STRING,
+                  description: 'Proporção recomendada, ex: 16:9, 4:5, 1:1, 9:16',
+                },
+                negativePrompt: {
+                  type: Type.STRING,
+                  description: 'Elementos indesejados para negative prompt se aplicável',
+                },
+                rawParams: {
+                  type: Type.STRING,
+                  description: 'Parâmetros brutos em sintaxe do modelo (ex: --ar 16:9 --v 6.1)',
+                },
+                formattedPrompt: {
+                  type: Type.STRING,
+                  description: 'Prompt otimizado e bem pontuado para envio ao gerador de imagem',
+                },
+                analysisNotes: {
+                  type: Type.STRING,
+                  description: 'Breve nota com dicas de como tirar o melhor proveito deste prompt',
+                },
+              },
+              required: [
+                'title',
+                'suggestedCategory',
+                'tags',
+                'subject',
+                'environment',
+                'lighting',
+                'camera',
+                'composition',
+                'style',
+                'colors',
+                'formattedPrompt',
+              ],
             },
           },
-          required: [
-            'title',
-            'suggestedCategory',
-            'tags',
-            'subject',
-            'environment',
-            'lighting',
-            'camera',
-            'composition',
-            'style',
-            'colors',
-            'formattedPrompt',
-          ],
-        },
-      },
-    });
+        });
 
-    const text = response.text;
+        if (response.text) {
+          text = response.text;
+          break;
+        }
+      } catch (callError: any) {
+        lastError = callError;
+        console.warn(`[AI] Tentativa com modelo ${modelName} falhou:`, callError?.message || callError);
+        // If 503 unavailable or rate limited, try next fallback model
+      }
+    }
+
     if (!text) {
-      throw new Error('Resposta vazia da IA');
+      if (lastError) {
+        console.warn('Todos os modelos de IA retornaram erro ou indisponibilidade, ativando fallback heurístico seguro.');
+      }
+      return generateFallbackStructuredPrompt(rawPrompt, targetModel);
     }
 
     const parsed = JSON.parse(text);
-
-    return {
-      title: parsed.title || 'Prompt de Imagem Estruturado',
-      suggestedCategory: parsed.suggestedCategory || 'photorealism',
-      tags: Array.isArray(parsed.tags) ? parsed.tags : ['IA', 'Imagem'],
+    
+    // Validate through deterministic runtime schema
+    const validated = validateAIAnalysisOutput({
+      title: parsed.title,
+      suggestedCategory: parsed.suggestedCategory,
+      tags: parsed.tags,
       structured: {
-        subject: parsed.subject || '',
-        environment: parsed.environment || '',
-        lighting: parsed.lighting || '',
-        camera: parsed.camera || '',
-        composition: parsed.composition || '',
-        style: parsed.style || '',
-        colors: parsed.colors || '',
-        instructions: parsed.instructions || '',
+        subject: parsed.subject,
+        environment: parsed.environment,
+        lighting: parsed.lighting,
+        camera: parsed.camera,
+        composition: parsed.composition,
+        style: parsed.style,
+        colors: parsed.colors,
+        instructions: parsed.instructions,
         parameters: {
-          aspectRatio: parsed.aspectRatio || '16:9',
-          negativePrompt: parsed.negativePrompt || '',
-          rawParams: parsed.rawParams || '',
+          aspectRatio: parsed.aspectRatio,
+          negativePrompt: parsed.negativePrompt,
+          rawParams: parsed.rawParams,
         },
       },
-      formattedPrompt: parsed.formattedPrompt || rawPrompt,
-      analysisNotes: parsed.analysisNotes || '',
+      formattedPrompt: parsed.formattedPrompt,
+      analysisNotes: parsed.analysisNotes,
+    });
+
+    if (!validated) {
+      console.warn('Saída da IA falhou na validação de esquema estrito, usando fallback determinístico.');
+      return generateFallbackStructuredPrompt(rawPrompt, targetModel);
+    }
+
+    return {
+      title: validated.title || 'Prompt de Imagem Estruturado',
+      suggestedCategory: validated.suggestedCategory,
+      tags: validated.tags.length > 0 ? validated.tags : ['IA', 'Imagem'],
+      structured: validated.structured,
+      formattedPrompt: validated.formattedPrompt || rawPrompt,
+      analysisNotes: validated.analysisNotes || '',
     };
   } catch (error) {
     console.error('Erro na análise de prompt via Gemini:', error);
