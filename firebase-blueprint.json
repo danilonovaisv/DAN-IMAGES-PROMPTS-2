@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "prompt": {
+      "title": "Prompt Item",
+      "description": "Creative visual prompt asset with metadata, structured parameters, and classification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 300 },
+        "rawPrompt": { "type": "string", "maxLength": 10000 },
+        "targetModel": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "maxLength": 100 },
+        "tags": { "type": "array" },
+        "isFavorite": { "type": "boolean" },
+        "copyCount": { "type": "number" },
+        "notes": { "type": "string", "maxLength": 5000 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": [
+        "id",
+        "title",
+        "rawPrompt",
+        "targetModel",
+        "category",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "category": {
+      "title": "Category",
+      "description": "Visual prompt category classification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "slug": { "type": "string", "maxLength": 100 },
+        "icon": { "type": "string", "maxLength": 50 },
+        "color": { "type": "string", "maxLength": 50 },
+        "description": { "type": "string", "maxLength": 500 },
+        "isDefault": { "type": "boolean" }
+      },
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "icon",
+        "color"
+      ]
+    },
+    "systemMetadata": {
+      "title": "System Metadata",
+      "description": "Database initialization and migration metadata",
+      "type": "object",
+      "properties": {
+        "initialized": { "type": "boolean" },
+        "initializedAt": { "type": "string" },
+        "resetAt": { "type": "string" }
+      },
+      "required": [
+        "initialized"
+      ]
+    }
+  },
+  "firestore": {
+    "/prompts/{promptId}": {
+      "schema": { "$ref": "#/entities/prompt" },
+      "description": "Collection of visual prompts"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/category" },
+      "description": "Collection of prompt categories"
+    },
+    "/_metadata/{docId}": {
+      "schema": { "$ref": "#/entities/systemMetadata" },
+      "description": "System state metadata"
+    }
+  }
+}

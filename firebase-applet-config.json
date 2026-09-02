@@ -3,6 +3,7 @@
   "appId": "1:1044209571335:web:81f4b77bcd0a44b284bca2",
   "apiKey": "AIzaSyDHLQ4MHwh_KU1ahvPcstxT11xouYtZMXg",
   "authDomain": "projeto-agents-503014.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-danimagesprompts-66ef31fb-e640-4078-a629-4ed21b3dab40",
   "storageBucket": "projeto-agents-503014.firebasestorage.app",
   "messagingSenderId": "1044209571335",
   "measurementId": "",

@@ -1,0 +1,78 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all documents
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Security Helper Functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is string && ts.size() <= 64;
+    }
+
+    function isValidPrompt(data) {
+      return data.id is string && isValidId(data.id)
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 300
+        && data.rawPrompt is string && data.rawPrompt.size() > 0 && data.rawPrompt.size() <= 10000
+        && data.targetModel is string && data.targetModel.size() <= 100
+        && data.category is string && data.category.size() <= 100
+        && (!('tags' in data) || (data.tags is list && data.tags.size() <= 30))
+        && (!('isFavorite' in data) || data.isFavorite is bool)
+        && (!('copyCount' in data) || data.copyCount is number)
+        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 5000))
+        && data.createdAt is string && isValidTimestamp(data.createdAt)
+        && data.updatedAt is string && isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidCategory(data) {
+      return data.id is string && isValidId(data.id)
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && data.slug is string && data.slug.size() > 0 && data.slug.size() <= 100
+        && data.icon is string && data.icon.size() <= 50
+        && data.color is string && data.color.size() <= 50
+        && (!('description' in data) || (data.description is string && data.description.size() <= 500))
+        && (!('isDefault' in data) || data.isDefault is bool);
+    }
+
+    // Prompts collection
+    match /prompts/{promptId} {
+      allow get, list: if true;
+      allow create: if isValidId(promptId) && isValidPrompt(incoming()) && incoming().id == promptId;
+      allow update: if isValidId(promptId) && isValidPrompt(incoming()) && incoming().id == existing().id && incoming().createdAt == existing().createdAt;
+      allow delete: if isValidId(promptId);
+    }
+
+    // Categories collection
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create: if isValidId(categoryId) && isValidCategory(incoming()) && incoming().id == categoryId;
+      allow update: if isValidId(categoryId) && isValidCategory(incoming()) && incoming().id == existing().id;
+      allow delete: if isValidId(categoryId) && (!('isDefault' in existing()) || existing().isDefault == false);
+    }
+
+    // System metadata
+    match /_metadata/{docId} {
+      allow read: if true;
+      allow write: if isValidId(docId);
+    }
+  }
+}
