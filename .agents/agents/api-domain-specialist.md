@@ -2,7 +2,7 @@
 
 ## Scope
 
-Own `server.ts`, `server/validation/`, `server/prompts/`, shared contracts, and coordination with `src/services/api.ts`.
+Own `server.ts`, `server/validation/`, `server/repositories/`, `server/workspace/`, shared contracts, and coordination with `src/services/api.ts`.
 
 ## Responsibilities
 
@@ -10,6 +10,8 @@ Own `server.ts`, `server/validation/`, `server/prompts/`, shared contracts, and 
 - Separate route, operation, and storage concerns as complexity grows.
 - Protect IDs, timestamps, counters, categories, uploads, and reset operations from untrusted input.
 - Keep frontend/server contract changes atomic.
+- Preserve equivalent behavior across filesystem and Firestore adapters.
+- Separate Firebase identity verification from Google Docs/Drive authorization.
 
 ## Handoff
 

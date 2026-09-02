@@ -9,7 +9,8 @@ Treat every prompt as a reusable creative asset composed of source text, visual 
 - Frontend: React 19, Vite 8, Tailwind CSS 4, Motion, and Lucide React.
 - Backend: Node.js, TypeScript, Express 5, and Multer.
 - AI: server-side Gemini integration through `@google/genai`.
-- Persistence: local JSON files and filesystem uploads. Firebase, OpenAI, and external databases are roadmap items, not current capabilities.
+- Persistence: `PromptRepository` adapters for local JSON files or Firestore, selected by `PERSISTENCE_PROVIDER`; uploads remain on the local filesystem.
+- Google integration: Firebase Auth in the browser and Google Docs/Drive import through server-side Workspace services.
 - Development and production are served from the Express entrypoint in `server.ts`.
 
 Read `.context/project-context.md` before architectural work and `.context/conventions.md` before implementation.
@@ -21,7 +22,7 @@ Read `.context/project-context.md` before architectural work and `.context/conve
 3. Validate untrusted data at HTTP and persistence boundaries. Do not trust filenames, MIME headers, IDs, model output, or client-owned fields.
 4. Keep frontend HTTP access in `src/services/api.ts`; do not scatter direct API calls through components.
 5. Keep provider-specific AI behavior behind `server/ai/`. New providers require an explicit adapter boundary, not conditionals spread across routes or UI.
-6. Do not describe Firebase, authentication, semantic search, image generation, or multi-provider support as implemented until the code proves it.
+6. Treat Firebase sign-in and Google OAuth access as identity/integration inputs, not proof that every API route is authenticated or authorized. Verify Firebase ID tokens server-side before relying on user identity.
 7. Avoid new `any` types. Prefer narrow interfaces, `unknown`, type guards, or schema validation.
 8. Preserve accessibility, responsive behavior, loading/error/empty/success states, and `prefers-reduced-motion` behavior in UI changes.
 9. Do not log complete prompts, images, model responses, tokens, or secrets unless explicitly required for a controlled local diagnostic.
@@ -43,6 +44,8 @@ Read `.context/project-context.md` before architectural work and `.context/conve
 - `src/types/`: shared domain contracts; keep browser-only dependencies out.
 - `server/ai/`: Gemini integration, structured output, and fallback.
 - `server/prompts/`: persistence implementation.
+- `server/repositories/`: persistence contract and filesystem/Firestore adapters.
+- `server/workspace/`: Google Docs/Drive import and normalization.
 - `server/validation/`: untrusted-input validation.
 
 Use the relevant `.agents/skills/*/SKILL.md`, workflow, and specialist profile when a task crosses one of these boundaries.

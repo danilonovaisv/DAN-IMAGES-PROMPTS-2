@@ -8,7 +8,7 @@ Own package/build/runtime readiness and deployment planning, not unapproved depl
 
 - Keep pnpm, Vite, esbuild, Node runtime, env configuration, and health checks coherent.
 - Detect lockfile drift and artifacts that should not enter version control.
-- Verify production serving and document Cloud Run storage limitations.
+- Verify production serving, persistence-provider selection, Firebase/Firestore configuration, and Cloud Run storage limitations.
 - Define go/no-go and rollback criteria.
 
 ## Handoff

@@ -1,20 +1,31 @@
 # Cognitive Layer Task List
 
-- [x] Audit dependency files, source layout, integrations, and runtime topology.
-- [x] Recursively audit existing agent rules, skills, workflows, personas, hooks, commands, and MCP files.
-- [x] Classify the existing AI Studio metadata and agentic configuration gaps.
-- [x] Validate current `@google/genai` guidance through Context7.
-- [x] Create root `AGENTS.md` with stack and security invariants.
-- [x] Create passive project context and team conventions.
-- [x] Create exactly five stack-specific skills with YAML frontmatter.
-- [x] Create exactly three slash-command workflows.
-- [x] Create five specialist agent personas with ownership and handoffs.
-- [x] Create least-privilege MCP configuration for verified relevant servers.
-- [x] Record the implementation plan and task list.
-- [x] Validate all Markdown, YAML frontmatter, and JSON artifacts.
-- [x] Validate all five skills with a real YAML parser. The bundled skill validator could not start because its Python runtime lacks `PyYAML`.
-- [x] Run the existing TypeScript type-check.
-- [x] Review the final changes and reclassify the completed agentic layer.
-- [ ] Verify Google Developer Knowledge MCP schema when that capability becomes available.
-- [ ] Decide whether to remove legacy `bun.lock` and ignore/remove `.pnpm-store/` in a separately authorized repository-hygiene change.
-- [ ] Address application security, persistence, tests, and Cloud Run durability in separately approved implementation phases.
+## Completed
+
+- [x] Audit package metadata, source layout, runtime topology, integrations, tests, and persistence providers.
+- [x] Recursively audit rules, context, skills, workflows, personas, hooks, commands, and MCP configuration.
+- [x] Classify every existing agentic component as valid, outdated, or incomplete.
+- [x] Verify current `@google/genai` and Firebase guidance through Context7.
+- [x] Update `AGENTS.md` with Firebase, Firestore, Workspace, and identity boundaries.
+- [x] Update project context with current topology, APIs, contracts, tests, and known constraints.
+- [x] Update conventions for OAuth, Firebase identity, payload limits, and persistence adapters.
+- [x] Keep exactly five stack-specific skills; replace `filesystem-persistence` with `persistence-adapters`.
+- [x] Keep exactly three workflows; extend `/release` for Firebase, Firestore, Workspace, and Cloud Run durability.
+- [x] Update frontend, API, and release personas; preserve valid Gemini and security personas.
+- [x] Review `.mcp.json` and retain only verified, relevant Context7 and GitHub servers.
+- [x] Refresh the implementation plan and task list.
+- [x] Validate JSON, Markdown structure, skill frontmatter, TypeScript, tests, and final diff.
+
+## Pending Verification
+
+- [ ] Verify Google Developer Knowledge MCP availability, endpoint, schema, and IDE compatibility before configuration.
+- [ ] Verify an official Firebase MCP and its least-privilege authentication model before configuration.
+- [ ] Decide whether legacy `bun.lock` should be removed in a separately authorized repository-hygiene change.
+
+## Separate Application Phases
+
+- [ ] Add server-side Firebase ID-token verification and per-user authorization.
+- [ ] Add runtime validation for Gemini output and imported Workspace data.
+- [ ] Add rate limiting and explicit JSON/Base64/upload batch limits.
+- [ ] Add upload signature inspection and durable object storage for Cloud Run.
+- [ ] Add Firestore emulator/credentialed adapter tests, CI, and real linting.

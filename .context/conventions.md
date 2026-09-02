@@ -22,6 +22,8 @@
 - Separate transport, domain operation, and persistence when extending `server.ts`.
 - Avoid synchronous filesystem work in request paths when changing persistence code.
 - Preserve backward compatibility between `src/services/api.ts` and server routes or update both atomically.
+- Treat Firebase ID tokens and Google OAuth access tokens as different credentials with different audiences. Verify identity tokens server-side before authorizing application data.
+- Apply explicit JSON, decoded Base64, file-count, and upload-size limits to Workspace and AI routes.
 
 ## Gemini
 
@@ -35,8 +37,18 @@
 
 - Treat all paths and file metadata as untrusted.
 - Prefer atomic writes and an adapter boundary for changes to the JSON store.
+- Keep `PromptRepository` behavior equivalent across filesystem and Firestore adapters.
+- Select persistence through validated server configuration; never let request data choose the provider.
 - Never assume local data or uploads survive a Cloud Run restart or scale-out.
 - A future database/storage migration requires a documented data migration and rollback plan.
+
+## Firebase And Google Workspace
+
+- Keep Firebase client configuration separate from Firebase Admin credentials and server authorization.
+- Never log or persist Google OAuth access tokens.
+- Minimize requested Google scopes and transmit access tokens only to the server endpoints that require them.
+- Keep Docs/Drive parsing in `server/workspace/` and browser transport in `src/services/api.ts`.
+- Treat imported text, filenames, URLs, and AI-enriched fields as untrusted until validated.
 
 ## Verification
 

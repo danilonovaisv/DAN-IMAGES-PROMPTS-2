@@ -2,36 +2,85 @@
 
 ## Objective
 
-Establish a portable agent-first cognitive layer for DAN IMAGES PROMPTS with persistent project context, stack-specific skills, repeatable workflows, specialist ownership, and least-privilege MCP connectivity.
+Keep the DAN IMAGES PROMPTS agent-first layer aligned with the implemented React, Express, Gemini, Firebase, Firestore, and Google Workspace architecture while preserving strict security and data-contract boundaries.
 
 ## Audit Summary
 
-The verified stack is TypeScript, React 19, Vite 6, Tailwind CSS 4, Motion, Express 4, Multer, and server-side Gemini through `@google/genai`. Persistence is local JSON and filesystem uploads. Firebase, authentication, OpenAI, external databases, tests, ESLint, CI, and declarative deploy configuration are not implemented.
+The verified stack is TypeScript ESM, React 19.2, Vite 8.2, Tailwind CSS 4, Motion, Express 5.2, Multer 2.3, `@google/genai` 2.20, Firebase Auth, Firebase Admin/Firestore, and pnpm. The default persistence provider is filesystem JSON; Firestore is an implemented adapter selected through `PERSISTENCE_PROVIDER`. Uploads remain local filesystem data.
 
-Existing agentic configuration was absent except for `assets/.aistudio/.gitignore`, which is valid but limited to Google AI Studio. No conflicting or redundant agent rules were found. `/graphify`, Google Developer Knowledge MCP, Exa, and Firecrawl were unavailable during discovery; Context7 was available and used for current `@google/genai` guidance.
+The repository also implements Google Docs/Drive import with OAuth access tokens and has TypeScript persistence and HTTP API regression tests executed through `tsx`. OpenAI, Postgres, Supabase, semantic search, image generation, CI, ESLint, rate limiting, server-side Firebase token verification, and per-user authorization are not implemented.
+
+## Data Contracts
+
+```text
+PromptAnalysisRequest
+  -> /api/analyze-prompt
+  -> AnalyzePromptInput
+  -> Gemini responseSchema
+  -> StructuredAnalysisResult
+  -> PromptAnalysisResponse
+  -> human review
+  -> PromptItem
+  -> PromptRepository
+  -> FilePromptRepository | FirestorePromptRepository
+```
+
+```text
+Firebase/Google OAuth
+  -> WorkspaceImportModal
+  -> ApiService
+  -> /api/workspace/*
+  -> GoogleWorkspaceService
+  -> PromptRepository
+```
+
+The reference types `ExtractedData`, `AnalysisData`, `TutorialData`, and `WorkspaceData` do not exist in this project and are not part of its contracts.
+
+## Agentic Configuration Classification
+
+| Area | Previous state | Resolution |
+| --- | --- | --- |
+| `AGENTS.md` | Outdated Firebase/persistence description | Updated with Firebase, Firestore, Workspace, and identity boundaries |
+| `.context/project-context.md` | Outdated topology and capabilities | Updated with both repository adapters and Workspace flow |
+| `.context/conventions.md` | Incomplete token and adapter rules | Added Firebase/OAuth, payload, and provider conventions |
+| Frontend/Gemini/security skills | Valid | Preserved |
+| Express skill | Incomplete | Added authentication, Workspace, and payload responsibilities |
+| Filesystem skill | Outdated | Replaced by `persistence-adapters` |
+| `/test` and `/quality` | Valid | Preserved |
+| `/release` | Incomplete | Added Firestore, Firebase, Workspace, and durability gates |
+| Frontend/API/release personas | Incomplete | Updated ownership and handoffs |
+| Gemini/security personas | Valid | Preserved |
+| `.mcp.json` | Valid but intentionally limited | Context7 and GitHub retained; no unverified server added |
+
+No duplicate `.agent/`, `GEMINI.md`, hooks, commands, or competing rules were found.
 
 ## Implemented Structure
 
 ```text
 AGENTS.md
 .context/{project-context.md,conventions.md}
-.agents/skills/<five stack-specific skills>/SKILL.md
+.agents/skills/{react-vite-frontend,express-api-contracts,persistence-adapters,gemini-multimodal-cataloging,app-security}/SKILL.md
 .agents/workflows/{test.md,quality.md,release.md}
-.agents/agents/<five specialist profiles>.md
+.agents/agents/{frontend-specialist,api-domain-specialist,gemini-ai-specialist,security-auditor,release-engineer}.md
 .mcp.json
 artifacts/{implementation_plan.md,task_list.md}
 ```
 
 ## Design Decisions
 
-- `.agents/` is canonical; `.agent/` is intentionally not created.
-- `AGENTS.md` holds global invariants; skills contain only task-specific decision guidance.
-- Exactly five skills cover frontend, API contracts, Gemini cataloging, current filesystem persistence, and application security.
-- Exactly three workflows map `/test`, `/quality`, and `/release`.
-- Personas have explicit ownership and handoff boundaries.
-- MCP connectivity is limited to Context7 and GitHub. Google Developer Knowledge remains excluded until its endpoint and schema can be verified in the target IDE.
-- pnpm is canonical because `pnpm-lock.yaml` and a local pnpm store are present; `bun.lock` is treated as legacy until the team decides otherwise.
+- `.agents/` remains canonical; `.agent/` is not introduced.
+- Exactly five stack-specific skills and three slash-command workflows are retained.
+- `AGENTS.md` owns global invariants; skills own task-specific guidance.
+- `PromptRepository` is the persistence contract; provider details stay in adapters.
+- Firebase identity and Google OAuth access are separate trust domains.
+- AI structured output requires runtime validation even when `responseSchema` is used.
+- Context7 and GitHub remain the only configured MCP servers because their endpoints are verified in the existing configuration.
+- Google Developer Knowledge and a Firebase MCP must not be added until their exact server identifiers, endpoints, schemas, and IDE support are verified.
 
-## Follow-Up Architecture Work
+## External Research
 
-Application-code risks discovered by the audit are intentionally not modified in this phase: synchronous JSON writes, ephemeral Cloud Run storage, weak upload inspection, missing auth/rate limiting, hardcoded Gemini model, lack of runtime schema validation, and absent automated tests/CI.
+Context7 was used to verify current `@google/genai` structured-output schema support and Firebase token patterns. The requested Google Developer Knowledge MCP and `/graphify` executable were unavailable in the active environment; those limitations are recorded rather than replaced with invented configuration.
+
+## Separate Application Work
+
+This cognitive-layer update does not implement server-side Firebase ID-token verification, per-user authorization, runtime Gemini schema validation, rate limiting, upload content inspection, object storage, CI, or ESLint. Those changes require separate approval, implementation, and failure-path testing.
