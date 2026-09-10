@@ -17,8 +17,8 @@ Express server (server.ts)
    |                +--> Gemini via @google/genai
    |
    +--> PromptRepository
-   |      +--> filesystem JSON (default)
-   |      +--> Firestore (configured provider)
+   |      +--> filesystem JSON (local dev & testing)
+   |      +--> Firestore (durable default in production/Cloud Run; fail-closed)
    |
    +--> uploads/* (local filesystem)
 ```
@@ -65,7 +65,7 @@ In development, Express mounts Vite middleware. In production, Vite builds the S
 
 ## Known Constraints
 
-- Local files are not durable storage on stateless Cloud Run instances.
+- Local files are not durable storage on stateless Cloud Run instances; production defaults to Firestore with fail-closed enforcement (no silent fallback).
 - Firestore records do not make local uploads durable; object storage remains a separate migration.
 - Upload validation trusts client MIME metadata and needs content inspection before production use.
 - Routes and server bootstrap are concentrated in `server.ts`.

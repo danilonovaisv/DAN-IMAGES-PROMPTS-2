@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test": "tsx tests/persistence.test.ts && tsx tests/api-persistence.test.ts",
+    "test": "tsx tests/persistence.test.ts && tsx tests/api-persistence.test.ts && tsx tests/provider-selection.test.ts",
     "check:updates": "pnpm outdated || true",
     "update:deps": "(pnpm outdated || true) && npx npm-check-updates -u && pnpm install"
   },

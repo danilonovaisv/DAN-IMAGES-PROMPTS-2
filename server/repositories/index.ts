@@ -4,12 +4,23 @@ import { FilePromptRepository } from './filePromptRepository';
 
 let repositoryInstance: PromptRepository | null = null;
 
+export function _resetRepositoryInstanceForTesting(): void {
+  repositoryInstance = null;
+}
+
+export function getActivePersistenceProvider(): 'firestore' | 'filesystem' | 'none' {
+  if (!repositoryInstance) return 'none';
+  return repositoryInstance instanceof FirestorePromptRepository ? 'firestore' : 'filesystem';
+}
+
 export async function getPromptRepository(): Promise<PromptRepository> {
   if (repositoryInstance) {
     return repositoryInstance;
   }
 
-  const provider = (process.env.PERSISTENCE_PROVIDER || 'filesystem').toLowerCase().trim();
+  const isProduction = process.env.NODE_ENV === 'production' || !!process.env.K_SERVICE;
+  const rawProvider = process.env.PERSISTENCE_PROVIDER?.toLowerCase().trim();
+  const provider = rawProvider || (isProduction ? 'firestore' : 'filesystem');
 
   if (provider === 'firestore') {
     try {
@@ -18,8 +29,18 @@ export async function getPromptRepository(): Promise<PromptRepository> {
       repositoryInstance = firestoreRepo;
       return repositoryInstance;
     } catch (err: any) {
-      console.warn('[persistence] Firestore initialization failed, falling back to FilePromptRepository for persistence:', err.message || err);
+      const msg = `[persistence] Fatal: Failed to initialize Firestore repository: ${err.message || err}. ` +
+        `Check GOOGLE_CLOUD_PROJECT, FIRESTORE_DATABASE_ID, and Google credentials. ` +
+        `Silent fallback to ephemeral filesystem is strictly prohibited in durable mode.`;
+      console.error(msg);
+      throw new Error(msg);
     }
+  }
+
+  if (process.env.K_SERVICE && process.env.ALLOW_EPHEMERAL_FILESYSTEM !== 'true') {
+    const msg = `[persistence] Fatal: Filesystem persistence is prohibited on Cloud Run (${process.env.K_SERVICE}) because container storage is ephemeral and leads to permanent data loss. Set PERSISTENCE_PROVIDER=firestore or explicitly set ALLOW_EPHEMERAL_FILESYSTEM=true for local container testing.`;
+    console.error(msg);
+    throw new Error(msg);
   }
 
   // Local filesystem persistence (reliable for local & standalone instances)

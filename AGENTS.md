@@ -9,7 +9,7 @@ Treat every prompt as a reusable creative asset composed of source text, visual 
 - Frontend: React 19, Vite 8, Tailwind CSS 4, Motion, and Lucide React.
 - Backend: Node.js, TypeScript, Express 5, and Multer.
 - AI: server-side Gemini integration through `@google/genai`.
-- Persistence: `PromptRepository` adapters for local JSON files or Firestore, selected by `PERSISTENCE_PROVIDER`; uploads remain on the local filesystem.
+- Persistence: `PromptRepository` adapters for local JSON files (development/testing) or Firestore (mandatory durable default in production/Cloud Run). Silent fallback to ephemeral filesystem in production is prohibited.
 - Google integration: Firebase Auth in the browser and Google Docs/Drive import through server-side Workspace services.
 - Development and production are served from the Express entrypoint in `server.ts`.
 

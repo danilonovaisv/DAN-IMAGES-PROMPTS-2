@@ -4,7 +4,7 @@ import fs from 'fs';
 import multer from 'multer';
 import { createServer as createViteServer } from 'vite';
 import { UPLOADS_DIR } from './server/prompts/storage';
-import { getPromptRepository } from './server/repositories';
+import { getPromptRepository, getActivePersistenceProvider } from './server/repositories';
 import { analyzeAndDecomposePrompt } from './server/ai/promptAnalyzer';
 import { validatePromptInput } from './server/validation/promptSchema';
 import { importPromptsFromWorkspace, importPromptsFromRawTextAndFiles } from './server/workspace/googleWorkspaceService';
@@ -57,6 +57,7 @@ async function startServer(customPort?: number) {
     res.json({
       status: 'ok',
       hasGeminiKey: !!process.env.GEMINI_API_KEY,
+      persistenceProvider: getActivePersistenceProvider(),
       timestamp: new Date().toISOString(),
     });
   });
