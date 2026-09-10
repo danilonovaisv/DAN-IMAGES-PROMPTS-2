@@ -1,8 +1,22 @@
-import { initializeApp, getApps } from 'firebase-admin/app';
-import { getFirestore, Firestore, FieldValue, QueryDocumentSnapshot, Transaction } from 'firebase-admin/firestore';
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
+import {
+  getFirestore,
+  Firestore,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  updateDoc,
+  collection,
+  writeBatch,
+  increment,
+  DocumentData,
+  QueryDocumentSnapshot,
+} from 'firebase/firestore';
 import fs from 'fs';
 import path from 'path';
-import { PromptItem, Category } from '../../src/types';
+import { PromptItem, Category } from '../../src/types/index.js';
 import { INITIAL_PROMPTS } from '../../src/data/initialPrompts';
 import { DEFAULT_CATEGORIES } from '../../src/data/defaultCategories';
 import { PromptRepository, PromptQuery, CreatePromptInput, UpdatePromptInput } from './promptRepository';
@@ -21,16 +35,24 @@ export class FirestorePromptRepository implements PromptRepository {
       process.env.FIRESTORE_DATABASE_ID ||
       process.env.FIREBASE_DATABASE_ID;
 
+    let apiKey = process.env.FIREBASE_API_KEY;
+
     try {
       const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
       if (fs.existsSync(configPath)) {
         const raw = fs.readFileSync(configPath, 'utf-8');
         const parsed = JSON.parse(raw);
-        if (!projectId && parsed.projectId) {
-          projectId = parsed.projectId;
+        if (!projectId || projectId === 'projeto-agents-503014') {
+          projectId = parsed.projectId || projectId;
         }
-        if (!databaseId && parsed.firestoreDatabaseId) {
-          databaseId = parsed.firestoreDatabaseId;
+        if (parsed.firestoreDatabaseId) {
+          // If env has invalid/typo ID 'portfolio-danilo-novais' or is empty, prefer the authoritative provisioned database ID
+          if (!databaseId || databaseId === 'portfolio-danilo-novais') {
+            databaseId = parsed.firestoreDatabaseId;
+          }
+        }
+        if (parsed.apiKey && !apiKey) {
+          apiKey = parsed.apiKey;
         }
       }
     } catch (err) {
@@ -41,12 +63,21 @@ export class FirestorePromptRepository implements PromptRepository {
       projectId = 'projeto-agents-503014';
     }
 
-    const app = getApps().length === 0
-      ? initializeApp({ projectId })
-      : getApps()[0];
+    const appName = 'prompt-persistence-app';
+    let app: FirebaseApp;
+    try {
+      app = getApp(appName);
+    } catch {
+      app = initializeApp(
+        {
+          projectId,
+          apiKey: apiKey || 'AIzaSyDHLQ4MHwh_KU1ahvPcstxT11xouYtZMXg',
+        },
+        appName
+      );
+    }
 
     this.db = databaseId ? getFirestore(app, databaseId) : getFirestore(app);
-    this.db.settings({ ignoreUndefinedProperties: true });
     console.log(`[persistence] provider initialized: Firestore (Project ID: ${projectId}, Database: ${databaseId || '(default)'})`);
   }
 
@@ -58,20 +89,20 @@ export class FirestorePromptRepository implements PromptRepository {
 
   public async seedIfEmpty(): Promise<{ promptsSeeded: number; categoriesSeeded: number }> {
     try {
-      const metaRef = this.db.collection('_metadata').doc('system');
-      const metaSnap = await metaRef.get();
+      const metaRef = doc(this.db, '_metadata', 'system');
+      const metaSnap = await getDoc(metaRef);
 
-      if (metaSnap.exists && metaSnap.data()?.initialized) {
+      if (metaSnap.exists() && (metaSnap.data() as any)?.initialized) {
         console.log('[persistence] seed skipped: database already initialized');
         return { promptsSeeded: 0, categoriesSeeded: 0 };
       }
 
       // Check if collections already have data
-      const promptsCountSnap = await this.db.collection('prompts').limit(1).get();
-      const categoriesCountSnap = await this.db.collection('categories').limit(1).get();
+      const promptsSnap = await getDocs(collection(this.db, 'prompts'));
+      const categoriesSnap = await getDocs(collection(this.db, 'categories'));
 
-      if (!promptsCountSnap.empty && !categoriesCountSnap.empty) {
-        await metaRef.set({ initialized: true, initializedAt: new Date().toISOString() }, { merge: true });
+      if (!promptsSnap.empty && !categoriesSnap.empty) {
+        await setDoc(metaRef, { initialized: true, initializedAt: new Date().toISOString() }, { merge: true });
         console.log('[persistence] seed skipped: existing collections found');
         return { promptsSeeded: 0, categoriesSeeded: 0 };
       }
@@ -109,19 +140,19 @@ export class FirestorePromptRepository implements PromptRepository {
         console.warn('[persistence] Could not read local categories.json for migration:', err);
       }
 
-      const batch = this.db.batch();
+      const batch = writeBatch(this.db);
 
-      if (promptsCountSnap.empty) {
+      if (promptsSnap.empty) {
         for (const prompt of seedPrompts) {
-          const docRef = this.db.collection('prompts').doc(prompt.id);
-          batch.set(docRef, prompt);
+          const cleanPrompt = Object.fromEntries(Object.entries(prompt).filter(([_, v]) => v !== undefined));
+          batch.set(doc(this.db, 'prompts', prompt.id), cleanPrompt);
         }
       }
 
-      if (categoriesCountSnap.empty) {
+      if (categoriesSnap.empty) {
         for (const category of seedCategories) {
-          const docRef = this.db.collection('categories').doc(category.id);
-          batch.set(docRef, category);
+          const cleanCategory = Object.fromEntries(Object.entries(category).filter(([_, v]) => v !== undefined));
+          batch.set(doc(this.db, 'categories', category.id), cleanCategory);
         }
       }
 
@@ -135,8 +166,8 @@ export class FirestorePromptRepository implements PromptRepository {
       console.log(`[persistence] migration completed: ${seedPrompts.length} prompts, ${seedCategories.length} categories`);
 
       return {
-        promptsSeeded: promptsCountSnap.empty ? seedPrompts.length : 0,
-        categoriesSeeded: categoriesCountSnap.empty ? seedCategories.length : 0,
+        promptsSeeded: promptsSnap.empty ? seedPrompts.length : 0,
+        categoriesSeeded: categoriesSnap.empty ? seedCategories.length : 0,
       };
     } catch (err: any) {
       console.warn('[persistence] Firestore seed/migration check encountered error:', err?.message || err);
@@ -145,11 +176,11 @@ export class FirestorePromptRepository implements PromptRepository {
   }
 
   public async getPrompts(query?: PromptQuery): Promise<PromptItem[]> {
-    const snapshot = await this.db.collection('prompts').get();
+    const snapshot = await getDocs(collection(this.db, 'prompts'));
     let result: PromptItem[] = [];
 
-    snapshot.forEach((doc: QueryDocumentSnapshot) => {
-      result.push(doc.data() as PromptItem);
+    snapshot.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+      result.push(docSnap.data() as PromptItem);
     });
 
     if (query?.onlyFavorites) {
@@ -207,8 +238,8 @@ export class FirestorePromptRepository implements PromptRepository {
   }
 
   public async getPromptById(id: string): Promise<PromptItem | null> {
-    const docSnap = await this.db.collection('prompts').doc(id).get();
-    if (!docSnap.exists) return null;
+    const docSnap = await getDoc(doc(this.db, 'prompts', id));
+    if (!docSnap.exists()) return null;
     return docSnap.data() as PromptItem;
   }
 
@@ -224,14 +255,15 @@ export class FirestorePromptRepository implements PromptRepository {
       updatedAt: input.updatedAt || now,
     };
 
-    await this.db.collection('prompts').doc(id).set(newPrompt);
+    const cleanPrompt = Object.fromEntries(Object.entries(newPrompt).filter(([_, v]) => v !== undefined));
+    await setDoc(doc(this.db, 'prompts', id), cleanPrompt);
     return newPrompt;
   }
 
   public async updatePrompt(id: string, updates: UpdatePromptInput): Promise<PromptItem | null> {
-    const docRef = this.db.collection('prompts').doc(id);
-    const snap = await docRef.get();
-    if (!snap.exists) return null;
+    const docRef = doc(this.db, 'prompts', id);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return null;
 
     const existing = snap.data() as PromptItem;
     const updated: PromptItem = {
@@ -242,51 +274,48 @@ export class FirestorePromptRepository implements PromptRepository {
       updatedAt: new Date().toISOString(),
     };
 
-    await docRef.set(updated, { merge: true });
+    const cleanUpdated = Object.fromEntries(Object.entries(updated).filter(([_, v]) => v !== undefined));
+    await setDoc(docRef, cleanUpdated, { merge: true });
     return updated;
   }
 
   public async deletePrompt(id: string): Promise<boolean> {
-    const docRef = this.db.collection('prompts').doc(id);
-    const snap = await docRef.get();
-    if (!snap.exists) return false;
+    const docRef = doc(this.db, 'prompts', id);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return false;
 
-    await docRef.delete();
+    await deleteDoc(docRef);
     return true;
   }
 
   public async toggleFavorite(id: string): Promise<PromptItem | null> {
-    const docRef = this.db.collection('prompts').doc(id);
-    return await this.db.runTransaction(async (transaction: Transaction) => {
-      const snap = await transaction.get(docRef);
-      if (!snap.exists) return null;
+    const docRef = doc(this.db, 'prompts', id);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return null;
 
-      const data = snap.data() as PromptItem;
-      const isFavorite = !data.isFavorite;
-      const updatedAt = new Date().toISOString();
+    const data = snap.data() as PromptItem;
+    const isFavorite = !data.isFavorite;
+    const updatedAt = new Date().toISOString();
 
-      transaction.update(docRef, { isFavorite, updatedAt });
-      return { ...data, isFavorite, updatedAt };
-    });
+    await updateDoc(docRef, { isFavorite, updatedAt });
+    return { ...data, isFavorite, updatedAt };
   }
 
   public async incrementCopyCount(id: string): Promise<PromptItem | null> {
-    const docRef = this.db.collection('prompts').doc(id);
-    return await this.db.runTransaction(async (transaction: Transaction) => {
-      const snap = await transaction.get(docRef);
-      if (!snap.exists) return null;
+    const docRef = doc(this.db, 'prompts', id);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return null;
 
-      const data = snap.data() as PromptItem;
-      const copyCount = (data.copyCount || 0) + 1;
-      const updatedAt = new Date().toISOString();
+    const data = snap.data() as PromptItem;
+    const copyCount = (data.copyCount || 0) + 1;
+    const updatedAt = new Date().toISOString();
 
-      transaction.update(docRef, {
-        copyCount: FieldValue.increment(1),
-        updatedAt,
-      });
-
-      return { ...data, copyCount, updatedAt };
+    await updateDoc(docRef, {
+      copyCount: increment(1),
+      updatedAt,
     });
+
+    return { ...data, copyCount, updatedAt };
   }
 
   public async duplicatePrompt(id: string): Promise<PromptItem | null> {
@@ -303,22 +332,23 @@ export class FirestorePromptRepository implements PromptRepository {
       updatedAt: now,
     };
 
-    await this.db.collection('prompts').doc(duplicated.id).set(duplicated);
+    const cleanDuplicated = Object.fromEntries(Object.entries(duplicated).filter(([_, v]) => v !== undefined));
+    await setDoc(doc(this.db, 'prompts', duplicated.id), cleanDuplicated);
     return duplicated;
   }
 
   public async getCategories(): Promise<Category[]> {
-    const snapshot = await this.db.collection('categories').get();
+    const snapshot = await getDocs(collection(this.db, 'categories'));
     const result: Category[] = [];
-    snapshot.forEach((doc: QueryDocumentSnapshot) => {
-      result.push(doc.data() as Category);
+    snapshot.forEach((docSnap: QueryDocumentSnapshot<DocumentData>) => {
+      result.push(docSnap.data() as Category);
     });
     return result;
   }
 
   public async getCategoryById(id: string): Promise<Category | null> {
-    const snap = await this.db.collection('categories').doc(id).get();
-    if (!snap.exists) return null;
+    const snap = await getDoc(doc(this.db, 'categories', id));
+    if (!snap.exists()) return null;
     return snap.data() as Category;
   }
 
@@ -329,14 +359,15 @@ export class FirestorePromptRepository implements PromptRepository {
       id,
       isDefault: category.isDefault ?? false,
     };
-    await this.db.collection('categories').doc(id).set(newCat);
+    const cleanCat = Object.fromEntries(Object.entries(newCat).filter(([_, v]) => v !== undefined));
+    await setDoc(doc(this.db, 'categories', id), cleanCat);
     return newCat;
   }
 
   public async updateCategory(id: string, updates: Partial<Category>): Promise<Category | null> {
-    const docRef = this.db.collection('categories').doc(id);
-    const snap = await docRef.get();
-    if (!snap.exists) return null;
+    const docRef = doc(this.db, 'categories', id);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return null;
 
     const existing = snap.data() as Category;
     const updated: Category = {
@@ -345,42 +376,44 @@ export class FirestorePromptRepository implements PromptRepository {
       id: existing.id,
     };
 
-    await docRef.set(updated, { merge: true });
+    const cleanUpdated = Object.fromEntries(Object.entries(updated).filter(([_, v]) => v !== undefined));
+    await setDoc(docRef, cleanUpdated, { merge: true });
     return updated;
   }
 
   public async deleteCategory(id: string): Promise<boolean> {
-    const docRef = this.db.collection('categories').doc(id);
-    const snap = await docRef.get();
-    if (!snap.exists) return false;
+    const docRef = doc(this.db, 'categories', id);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return false;
 
     const cat = snap.data() as Category;
     if (cat.isDefault) return false;
 
-    await docRef.delete();
+    await deleteDoc(docRef);
     return true;
   }
 
   public async resetToDefaults(): Promise<void> {
     console.log('[persistence] Resetting database to defaults...');
-    
-    // Batch delete existing prompts
-    const promptsSnap = await this.db.collection('prompts').get();
-    const categoriesSnap = await this.db.collection('categories').get();
 
-    const batch = this.db.batch();
+    const promptsSnap = await getDocs(collection(this.db, 'prompts'));
+    const categoriesSnap = await getDocs(collection(this.db, 'categories'));
 
-    promptsSnap.forEach((doc: QueryDocumentSnapshot) => batch.delete(doc.ref));
-    categoriesSnap.forEach((doc: QueryDocumentSnapshot) => batch.delete(doc.ref));
+    const batch = writeBatch(this.db);
+
+    promptsSnap.forEach((d: QueryDocumentSnapshot<DocumentData>) => batch.delete(d.ref));
+    categoriesSnap.forEach((d: QueryDocumentSnapshot<DocumentData>) => batch.delete(d.ref));
 
     for (const p of INITIAL_PROMPTS) {
-      batch.set(this.db.collection('prompts').doc(p.id), p);
+      const cleanPrompt = Object.fromEntries(Object.entries(p).filter(([_, v]) => v !== undefined));
+      batch.set(doc(this.db, 'prompts', p.id), cleanPrompt);
     }
     for (const c of DEFAULT_CATEGORIES) {
-      batch.set(this.db.collection('categories').doc(c.id), c);
+      const cleanCat = Object.fromEntries(Object.entries(c).filter(([_, v]) => v !== undefined));
+      batch.set(doc(this.db, 'categories', c.id), cleanCat);
     }
 
-    const metaRef = this.db.collection('_metadata').doc('system');
+    const metaRef = doc(this.db, '_metadata', 'system');
     batch.set(metaRef, {
       initialized: true,
       initializedAt: new Date().toISOString(),
@@ -391,3 +424,4 @@ export class FirestorePromptRepository implements PromptRepository {
     console.log('[persistence] Database successfully reset to defaults.');
   }
 }
+

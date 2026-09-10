@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'test';
 process.env.PERSISTENCE_PROVIDER = 'filesystem';
+process.env.ALLOW_EPHEMERAL_FILESYSTEM = 'true';
 
 import assert from 'assert';
 import fs from 'fs';

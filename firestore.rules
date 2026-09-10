@@ -31,14 +31,14 @@ service cloud.firestore {
 
     function isValidPrompt(data) {
       return data.id is string && isValidId(data.id)
-        && data.title is string && data.title.size() > 0 && data.title.size() <= 300
-        && data.rawPrompt is string && data.rawPrompt.size() > 0 && data.rawPrompt.size() <= 10000
-        && data.targetModel is string && data.targetModel.size() <= 100
-        && data.category is string && data.category.size() <= 100
-        && (!('tags' in data) || (data.tags is list && data.tags.size() <= 30))
+        && data.title is string && data.title.size() > 0 && data.title.size() <= 1000
+        && data.rawPrompt is string && data.rawPrompt.size() > 0 && data.rawPrompt.size() <= 100000
+        && data.targetModel is string && data.targetModel.size() <= 200
+        && data.category is string && data.category.size() <= 200
+        && (!('tags' in data) || (data.tags is list && data.tags.size() <= 100))
         && (!('isFavorite' in data) || data.isFavorite is bool)
         && (!('copyCount' in data) || data.copyCount is number)
-        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 5000))
+        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 50000))
         && (!('userId' in data) || (data.userId is string && data.userId.size() <= 128))
         && (!('createdBy' in data) || (data.createdBy is string && data.createdBy.size() <= 200))
         && data.createdAt is string && isValidTimestamp(data.createdAt)

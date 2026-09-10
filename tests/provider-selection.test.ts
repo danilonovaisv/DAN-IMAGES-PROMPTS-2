@@ -124,7 +124,9 @@ async function runProviderSelectionTests() {
   console.log('=================================================\n');
 }
 
-runProviderSelectionTests().catch((err) => {
+runProviderSelectionTests().then(() => {
+  process.exit(0);
+}).catch((err) => {
   console.error('\n❌ PROVIDER SELECTION TEST FAILED:', err);
   process.exit(1);
 });

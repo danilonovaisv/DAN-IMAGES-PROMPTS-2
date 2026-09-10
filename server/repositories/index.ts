@@ -20,7 +20,16 @@ export async function getPromptRepository(): Promise<PromptRepository> {
 
   const isProduction = process.env.NODE_ENV === 'production' || !!process.env.K_SERVICE;
   const rawProvider = process.env.PERSISTENCE_PROVIDER?.toLowerCase().trim();
-  const provider = rawProvider || (isProduction ? 'firestore' : 'filesystem');
+  
+  let provider: 'firestore' | 'filesystem';
+  if (rawProvider === 'filesystem') {
+    provider = 'filesystem';
+  } else if (rawProvider === 'firestore') {
+    provider = 'firestore';
+  } else {
+    // If undefined or unrecognized string, default to firestore in production/Cloud Run, filesystem in dev
+    provider = isProduction ? 'firestore' : 'filesystem';
+  }
 
   if (provider === 'firestore') {
     try {
