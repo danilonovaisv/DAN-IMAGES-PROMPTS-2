@@ -9,6 +9,7 @@ import { analyzeAndDecomposePrompt } from './server/ai/promptAnalyzer';
 import { validatePromptInput } from './server/validation/promptSchema';
 import { importPromptsFromWorkspace, importPromptsFromRawTextAndFiles } from './server/workspace/googleWorkspaceService';
 import { authenticateFirebaseToken, requireAuth } from './server/validation/authMiddleware';
+import { imageStore } from './server/storage/imageStore';
 
 const DEFAULT_PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
@@ -47,7 +48,24 @@ async function startServer(customPort?: number) {
   app.use(express.urlencoded({ extended: true, limit: '20mb' }));
   app.use(authenticateFirebaseToken);
 
-  // Serve uploaded images statically
+  // Serve uploaded images with fallback to durable Firestore storage
+  app.get('/api/uploads/:filename', async (req, res, next) => {
+    try {
+      const filename = path.basename(req.params.filename);
+      const img = await imageStore.getImage(filename);
+      if (img) {
+        res.setHeader('Content-Type', img.mimeType);
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        return res.send(img.buffer);
+      }
+      return res.status(404).json({ error: 'Imagem não encontrada.' });
+    } catch (err: any) {
+      console.error(`Erro ao servir imagem ${req.params.filename}:`, err);
+      next();
+    }
+  });
+
+  // Serve uploaded images statically as local cache
   app.use('/api/uploads', express.static(UPLOADS_DIR));
 
   // --- API Routes ---
@@ -90,12 +108,16 @@ async function startServer(customPort?: number) {
   });
 
   // File Upload endpoint (multipart)
-  app.post('/api/upload', upload.single('image') as unknown as express.RequestHandler, (req, res) => {
+  app.post('/api/upload', upload.single('image') as unknown as express.RequestHandler, async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: 'Nenhum arquivo de imagem foi enviado.' });
       }
-      const fileUrl = `/api/uploads/${req.file.filename}`;
+
+      // Persist to durable storage (Firestore + disk cache)
+      const fileBuffer = fs.readFileSync(req.file.path);
+      const fileUrl = await imageStore.saveImage(req.file.filename, fileBuffer, req.file.mimetype);
+
       res.json({
         url: fileUrl,
         filename: req.file.filename,
@@ -107,24 +129,18 @@ async function startServer(customPort?: number) {
     }
   });
 
-  // Base64 image upload endpoint (converts base64 to discrete file to prevent Base64 in JSON)
-  app.post('/api/upload-base64', (req, res) => {
+  // Base64 image upload endpoint (converts base64 to durable file in Firestore + disk cache)
+  app.post('/api/upload-base64', async (req, res) => {
     try {
       const { data, mimeType = 'image/jpeg' } = req.body;
       if (!data) {
         return res.status(400).json({ error: 'Dados base64 ausentes' });
       }
 
-      const matches = data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      const base64Data = matches ? matches[2] : data;
-      const ext = mimeType.includes('png') ? '.png' : mimeType.includes('webp') ? '.webp' : '.jpg';
-      const filename = `img-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${ext}`;
-      const filePath = path.join(UPLOADS_DIR, filename);
-
-      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+      const { url, filename } = await imageStore.saveBase64Image(data, mimeType, 'img');
 
       res.json({
-        url: `/api/uploads/${filename}`,
+        url,
         filename,
       });
     } catch (err: any) {
@@ -387,18 +403,23 @@ async function startServer(customPort?: number) {
   });
 
   // Batch Image Upload endpoint
-  app.post('/api/workspace/upload-batch-images', upload.array('images', 50) as unknown as express.RequestHandler, (req, res) => {
+  app.post('/api/workspace/upload-batch-images', upload.array('images', 50) as unknown as express.RequestHandler, async (req, res) => {
     try {
       const files = req.files as Express.Multer.File[];
       if (!files || files.length === 0) {
         return res.status(400).json({ error: 'Nenhuma imagem foi enviada.' });
       }
 
-      const uploadedList = files.map(file => ({
-        originalName: file.originalname,
-        localUrl: `/api/uploads/${file.filename}`,
-        size: file.size,
-      }));
+      const uploadedList = [];
+      for (const file of files) {
+        const fileBuffer = fs.readFileSync(file.path);
+        const localUrl = await imageStore.saveImage(file.filename, fileBuffer, file.mimetype);
+        uploadedList.push({
+          originalName: file.originalname,
+          localUrl,
+          size: file.size,
+        });
+      }
 
       res.json({
         success: true,
@@ -429,6 +450,10 @@ async function startServer(customPort?: number) {
   const port = customPort || DEFAULT_PORT;
   const server = app.listen(port, '0.0.0.0', () => {
     console.log(`DAN IMAGES PROMPTS Server running at http://0.0.0.0:${port}`);
+    // Sync any existing local files to durable Firestore storage in background
+    imageStore.syncLocalUploads().catch(err => {
+      console.warn('Background sync of uploads failed:', err);
+    });
   });
 
   return { app, server, repository };

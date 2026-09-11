@@ -76,5 +76,13 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isValidId(docId);
     }
+
+    // Persistent uploaded and imported images storage
+    match /app_images/{imageId} {
+      allow read, write: if true;
+      match /chunks/{chunkId} {
+        allow read, write: if true;
+      }
+    }
   }
 }

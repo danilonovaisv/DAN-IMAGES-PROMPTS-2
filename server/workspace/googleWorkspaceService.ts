@@ -3,6 +3,7 @@ import path from 'path';
 import { promptStore, UPLOADS_DIR } from '../prompts/storage';
 import { analyzeAndDecomposePrompt } from '../ai/promptAnalyzer';
 import { PromptItem, StructuredPromptData, ImageReference } from '../../src/types';
+import { imageStore } from '../storage/imageStore';
 
 export interface ImportWorkspaceParams {
   accessToken: string;
@@ -69,7 +70,80 @@ function normalizeName(str: string): string {
 }
 
 /**
+ * Intelligent file matcher matching prompt sections to images by name, number, or keywords
+ */
+function findBestMatchingFile<T extends { normalizedName: string }>(
+  sectionTitle: string,
+  sectionContent: string,
+  availableFiles: T[],
+  usedIndices: Set<number>
+): { match: T; index: number } | null {
+  const normTitle = normalizeName(sectionTitle);
+  const normContent = normalizeName(sectionContent);
+  const titleWords = normTitle.split(/\s+/).filter(w => w.length >= 3);
+
+  // 1. Exact or substring match on title
+  for (let idx = 0; idx < availableFiles.length; idx++) {
+    if (usedIndices.has(idx)) continue;
+    const item = availableFiles[idx];
+    if (
+      item.normalizedName === normTitle ||
+      (normTitle.length >= 4 && item.normalizedName.includes(normTitle)) ||
+      (item.normalizedName.length >= 4 && normTitle.includes(item.normalizedName))
+    ) {
+      return { match: item, index: idx };
+    }
+  }
+
+  // 2. Number index match (e.g. "13. FULL BODY SHOT" matching "13_Full_body_shot.jpg")
+  const titleNumMatch = sectionTitle.match(/\b\d+\b/);
+  if (titleNumMatch) {
+    const num = parseInt(titleNumMatch[0], 10);
+    for (let idx = 0; idx < availableFiles.length; idx++) {
+      if (usedIndices.has(idx)) continue;
+      const item = availableFiles[idx];
+      const fileNumMatch = item.normalizedName.match(/\b\d+\b/);
+      if (fileNumMatch && parseInt(fileNumMatch[0], 10) === num) {
+        return { match: item, index: idx };
+      }
+    }
+  }
+
+  // 3. Keyword / Token overlap scoring
+  let bestScore = 0;
+  let bestIdx = -1;
+
+  for (let idx = 0; idx < availableFiles.length; idx++) {
+    if (usedIndices.has(idx)) continue;
+    const item = availableFiles[idx];
+    const fileWords = item.normalizedName.split(/\s+/).filter(w => w.length >= 3 && !/^\d+$/.test(w));
+
+    let score = 0;
+    for (const fWord of fileWords) {
+      if (titleWords.includes(fWord) || normTitle.includes(fWord)) {
+        score += 3;
+      } else if (normContent.includes(fWord)) {
+        score += 1;
+      }
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestIdx = idx;
+    }
+  }
+
+  // Require meaningful keyword match (score >= 3, meaning at least one significant title word match)
+  if (bestScore >= 3 && bestIdx !== -1) {
+    return { match: availableFiles[bestIdx], index: bestIdx };
+  }
+
+  return null;
+}
+
+/**
  * Downloads a binary file from Google Drive and saves it to uploads directory
+ * and persists it durably to Firestore
  */
 async function downloadDriveFile(
   fileId: string,
@@ -80,7 +154,6 @@ async function downloadDriveFile(
   const ext = path.extname(fileName) || (mimeType.includes('png') ? '.png' : mimeType.includes('webp') ? '.webp' : '.jpg');
   const safeBase = fileName.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
   const uniqueFilename = `drive-${Date.now()}-${safeBase}${ext}`;
-  const localFilePath = path.join(UPLOADS_DIR, uniqueFilename);
 
   const response = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
     headers: {
@@ -94,9 +167,11 @@ async function downloadDriveFile(
   }
 
   const arrayBuffer = await response.arrayBuffer();
-  fs.writeFileSync(localFilePath, Buffer.from(arrayBuffer));
+  const buffer = Buffer.from(arrayBuffer);
 
-  return `/api/uploads/${uniqueFilename}`;
+  // Save durably to Firestore and disk cache via imageStore
+  const url = await imageStore.saveImage(uniqueFilename, buffer, mimeType);
+  return url;
 }
 
 /**
@@ -297,44 +372,31 @@ export async function importPromptsFromWorkspace(
   }));
 
   const importedPrompts: PromptItem[] = [];
+  const usedFileIndices = new Set<number>();
   let matchedImagesCount = 0;
   let updatedCount = 0;
   let importedCount = 0;
+
+  // Fetch existing prompts once to optimize performance
+  const existingPrompts = await promptStore.getPrompts();
 
   // Process each parsed section
   for (let i = 0; i < parsedSections.length; i++) {
     const section = parsedSections[i];
     const sectionTitleNormalized = normalizeName(section.rawTitle);
 
-    // Find matching Drive image
-    let matchedFile: DriveFile | null = null;
-
-    // A. Exact normalized title match
-    const exactMatch = driveFilesNormalized.find(
-      df => df.normalizedName === sectionTitleNormalized ||
-            df.normalizedName.includes(sectionTitleNormalized) ||
-            sectionTitleNormalized.includes(df.normalizedName)
+    // Find matching Drive image using intelligent matcher
+    const matchResult = findBestMatchingFile(
+      section.rawTitle,
+      section.rawContent,
+      driveFilesNormalized,
+      usedFileIndices
     );
 
-    if (exactMatch) {
-      matchedFile = exactMatch.file;
-    } else {
-      // B. Number index match (e.g. "Prompt 1" or "1" matching "01_image.png" or "1.png")
-      const numMatch = section.rawTitle.match(/\b\d+\b/);
-      if (numMatch) {
-        const num = parseInt(numMatch[0], 10);
-        const numFile = driveFilesNormalized.find(df => {
-          const fileNumMatch = df.file.name.match(/\b\d+\b/);
-          return fileNumMatch && parseInt(fileNumMatch[0], 10) === num;
-        });
-        if (numFile) {
-          matchedFile = numFile.file;
-        }
-      }
-      // C. Positional fallback if counts match and no specific name
-      if (!matchedFile && driveFiles[i]) {
-        matchedFile = driveFiles[i];
-      }
+    let matchedFile: DriveFile | null = null;
+    if (matchResult) {
+      matchedFile = matchResult.match.file;
+      usedFileIndices.add(matchResult.index);
     }
 
     let imageUrl: string | undefined;
@@ -364,7 +426,6 @@ export async function importPromptsFromWorkspace(
     }
 
     // Check if prompt already exists by title
-    const existingPrompts = await promptStore.getPrompts();
     const existing = existingPrompts.find(
       p => normalizeName(p.title) === sectionTitleNormalized
     );
@@ -476,40 +537,30 @@ export async function importPromptsFromRawTextAndFiles(
   }));
 
   const importedPrompts: PromptItem[] = [];
+  const usedImageIndices = new Set<number>();
   let matchedImagesCount = 0;
   let updatedCount = 0;
   let importedCount = 0;
+
+  // Fetch existing prompts once to optimize performance
+  const existingPrompts = await promptStore.getPrompts();
 
   for (let i = 0; i < parsedSections.length; i++) {
     const section = parsedSections[i];
     const sectionTitleNormalized = normalizeName(section.rawTitle);
 
-    // Find match among uploaded images
-    let matchedImg = normalizedImages.find(
-      img =>
-        img.normalizedName === sectionTitleNormalized ||
-        img.normalizedName.includes(sectionTitleNormalized) ||
-        sectionTitleNormalized.includes(img.normalizedName)
+    // Find match among uploaded images using intelligent matcher
+    const matchResult = findBestMatchingFile(
+      section.rawTitle,
+      section.rawContent,
+      normalizedImages,
+      usedImageIndices
     );
 
-    if (!matchedImg) {
-      const numMatch = section.rawTitle.match(/\b\d+\b/);
-      if (numMatch) {
-        const num = parseInt(numMatch[0], 10);
-        matchedImg = normalizedImages.find(img => {
-          const fileNumMatch = img.originalName.match(/\b\d+\b/);
-          return fileNumMatch && parseInt(fileNumMatch[0], 10) === num;
-        });
-      }
-    }
-
-    if (!matchedImg && normalizedImages[i]) {
-      matchedImg = normalizedImages[i];
-    }
-
     let imageUrl: string | undefined;
-    if (matchedImg) {
-      imageUrl = matchedImg.localUrl;
+    if (matchResult) {
+      imageUrl = matchResult.match.localUrl;
+      usedImageIndices.add(matchResult.index);
       matchedImagesCount++;
     }
 
@@ -527,7 +578,6 @@ export async function importPromptsFromRawTextAndFiles(
       }
     }
 
-    const existingPrompts = await promptStore.getPrompts();
     const existing = existingPrompts.find(
       p => normalizeName(p.title) === sectionTitleNormalized
     );

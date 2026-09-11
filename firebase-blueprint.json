@@ -62,6 +62,24 @@
       "required": [
         "initialized"
       ]
+    },
+    "imageAsset": {
+      "title": "Image Asset",
+      "description": "Durable persistent image asset for prompts and uploads",
+      "type": "object",
+      "properties": {
+        "filename": { "type": "string", "maxLength": 255 },
+        "mimeType": { "type": "string", "maxLength": 100 },
+        "data": { "type": "string" },
+        "size": { "type": "number" },
+        "chunkCount": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": [
+        "filename",
+        "mimeType",
+        "createdAt"
+      ]
     }
   },
   "firestore": {
@@ -76,6 +94,10 @@
     "/_metadata/{docId}": {
       "schema": { "$ref": "#/entities/systemMetadata" },
       "description": "System state metadata"
+    },
+    "/app_images/{imageId}": {
+      "schema": { "$ref": "#/entities/imageAsset" },
+      "description": "Collection of persistently stored prompt and uploaded images"
     }
   }
 }
