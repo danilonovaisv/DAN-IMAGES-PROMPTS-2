@@ -1,4 +1,4 @@
-import { Type } from '@google/genai';
+import { Type, ThinkingLevel } from '@google/genai';
 import { getGeminiAI } from './gemini';
 import { validateAIAnalysisOutput } from '../validation/aiAnalysisSchema';
 
@@ -83,7 +83,12 @@ ${imageBase64 ? 'Uma imagem de referência visual foi anexada. Incorpore os deta
       });
     }
 
-    const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash'];
+    const modelsToTry = [
+      'gemini-3.6-flash',
+      'gemini-3.8-flash',
+      'gemini-flash-latest',
+      'gemini-3.1-flash-lite',
+    ];
     let text = '';
     let lastError: any = null;
 
@@ -95,6 +100,7 @@ ${imageBase64 ? 'Uma imagem de referência visual foi anexada. Incorpore os deta
           config: {
             systemInstruction,
             temperature: 0.2,
+            thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
             responseMimeType: 'application/json',
             responseSchema: {
               type: Type.OBJECT,
